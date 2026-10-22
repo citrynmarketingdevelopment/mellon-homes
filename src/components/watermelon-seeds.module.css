@@ -1,0 +1,13 @@
+.field { position:absolute; inset:0; z-index:0; pointer-events:none; overflow:clip; }
+.seed { position:absolute; left:var(--seed-x); top:var(--seed-y); width:var(--seed-size); aspect-ratio:18 / 28; background:url('/images/watermelon-seed.svg') center / contain no-repeat; opacity:.75; translate:0 calc(var(--scroll-distance, 0px) * var(--seed-depth, 1)); transform:rotate(var(--seed-angle)); animation:drift var(--seed-time) ease-in-out var(--seed-delay) infinite alternate; animation-play-state:paused; }
+.field[data-running] .seed { animation-play-state:running; }
+.toggle { position:absolute; z-index:3; bottom:16px; left:5%; display:flex; align-items:center; gap:8px; padding:9px 12px; min-height:44px; border:1px solid #073f352b; border-radius:30px; color:#073f35; background:#fff9e966; font-size:11px; font-weight:700; cursor:pointer; }
+.toggle svg { width:13px; height:13px; }
+.toggle:hover { background:#fff9e9aa; }
+@keyframes drift {
+  0% { transform:translate3d(-15px,18px,0) rotate(calc(var(--seed-angle) - 35deg)) scale(.9); }
+  50% { transform:translate3d(12px,-10px,0) rotate(calc(var(--seed-angle) + 12deg)) scale(1.06); }
+  100% { transform:translate3d(26px,-30px,0) rotate(calc(var(--seed-angle) + 55deg)) scale(.96); }
+}
+@media(max-width:767px) { .seed:nth-child(2n) { display:none; } .seed { opacity:.4; } .toggle { left:auto; right:22px; bottom:6px; } }
+@media(prefers-reduced-motion:reduce) { .seed { animation:none; translate:none; } .toggle { display:none; } }

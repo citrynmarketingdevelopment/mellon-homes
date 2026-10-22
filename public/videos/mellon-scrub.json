@@ -1,0 +1,12 @@
+{
+  "source": "gemini_generated_video_9deb4588.mp4",
+  "sourceStartFrame": 54,
+  "sourceEndFrame": 138,
+  "fps": 24,
+  "frameCount": 85,
+  "neutralFrame": 24,
+  "width": 1280,
+  "height": 720,
+  "video": "/videos/mellon-scrub.mp4",
+  "poster": "/videos/mellon-scrub-poster.webp"
+}

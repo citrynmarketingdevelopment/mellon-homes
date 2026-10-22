@@ -1,0 +1,9 @@
+{
+  "triangles": 77016,
+  "materials": 18,
+  "bytes": 2855428,
+  "sha256": "e263287e46f5c2e5171eaa79352ee8b72aed0408bed8dad6f9465ddbb7459db0",
+  "source": "reference/Image_20261015_110502_865.png",
+  "method": "Hand-authored Blender geometry",
+  "reference_sha256": "4729f0739f77b94459ec8770c6d10cf4a0d40f660b9be497be17255cb312abaa"
+}

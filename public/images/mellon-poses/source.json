@@ -1,0 +1,36 @@
+{
+  "source": "gemini_generated_video_9deb4588.mp4",
+  "width": 1280,
+  "height": 720,
+  "fps": 24,
+  "poses": {
+    "neutral": {
+      "frame": 4,
+      "seconds": 0.16666666666666666
+    },
+    "left": {
+      "frame": 40,
+      "seconds": 1.6666666666666667
+    },
+    "up-left": {
+      "frame": 58,
+      "seconds": 2.4166666666666665
+    },
+    "up": {
+      "frame": 82,
+      "seconds": 3.4166666666666665
+    },
+    "up-right": {
+      "frame": 103,
+      "seconds": 4.291666666666667
+    },
+    "right": {
+      "frame": 132,
+      "seconds": 5.5
+    },
+    "down": {
+      "frame": 162,
+      "seconds": 6.75
+    }
+  }
+}

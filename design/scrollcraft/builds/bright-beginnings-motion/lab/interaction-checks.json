@@ -1,0 +1,41 @@
+[
+  {
+    "name": "desktop",
+    "width": 1440,
+    "height": 900,
+    "reduced": false,
+    "passed": true
+  },
+  {
+    "name": "tablet",
+    "width": 768,
+    "height": 1024,
+    "reduced": false,
+    "passed": true
+  },
+  {
+    "name": "phone",
+    "width": 390,
+    "height": 844,
+    "reduced": false,
+    "passed": true
+  },
+  {
+    "name": "compact",
+    "width": 360,
+    "height": 640,
+    "reduced": false,
+    "passed": true
+  },
+  {
+    "name": "reduced",
+    "width": 1440,
+    "height": 900,
+    "reduced": true,
+    "passed": true
+  },
+  {
+    "name": "no-javascript",
+    "passed": true
+  }
+]
