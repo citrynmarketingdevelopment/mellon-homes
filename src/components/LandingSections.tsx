@@ -5,11 +5,11 @@ import { HouseLineIcon } from "@phosphor-icons/react/dist/ssr/HouseLine";
 import { FilesIcon } from "@phosphor-icons/react/dist/ssr/Files";
 import { UsersIcon } from "@phosphor-icons/react/dist/ssr/Users";
 import { HandshakeIcon } from "@phosphor-icons/react/dist/ssr/Handshake";
-import PropertyGallery from "./PropertyGallery";
 import DevelopmentPipeline from "./DevelopmentPipeline";
 import Reveal from "./Reveal";
 import styles from "./landing.module.css";
 import PublishedListings from "./PublishedListings";
+import listingStyles from "./listings.module.css";
 
 const specialties = [
   { title: "Pre-foreclosure & delinquency", description: "Behind on payments? Talk through your property, your timeline, and the questions to raise with your lender.", Icon: HouseLineIcon },
@@ -28,24 +28,13 @@ export default function LandingSections() {
     <div className={styles.brandRibbon} aria-label="People. Properties. Solutions. Fresh starts.">
       {["People", "Properties", "Solutions", "Fresh starts"].map(word => <span key={word}>{word}<span aria-hidden="true">✳</span></span>)}
     </div>
-    <section id="mellon-properties" tabIndex={-1} className={`${styles.section} ${styles.properties}`} aria-labelledby="properties-title">
+    <section id="mellon-properties" tabIndex={-1} className={`${styles.section} ${styles.properties} ${listingStyles.homeSection}`} aria-labelledby="properties-title">
       <div className={styles.wrap}>
-        <Reveal className={styles.propertyHeading}>
-          <h2 id="properties-title">Fresh spaces.<br />New possibilities.</h2>
-          <Link href="/listings" className={styles.button}>Explore Mellon homes <ArrowUpRightIcon aria-hidden="true" /></Link>
+        <Reveal className={listingStyles.sectionHeading}>
+          <div><p className={listingStyles.eyebrow}>THE MELLON COLLECTION</p><h2 id="properties-title">Fresh spaces.<br /><span>New possibilities.</span></h2></div>
+          <div><p>A place to put down roots.<br />Find your next chapter with Mellon.</p><Link href="/listings" className={listingStyles.headingLink}>Explore Mellon homes <ArrowUpRightIcon aria-hidden="true" /></Link></div>
         </Reveal>
-        <PublishedListings fallback={<><Reveal className={styles.propertyGrid}>
-          <PropertyGallery />
-          <div className={styles.propertyStory}>
-            <p className={styles.eyebrow}>MELLON HOMES</p>
-            <h3>Make room<br />for your next.</h3>
-            <p>Modern design, open living spaces, and a fresh perspective on home.</p>
-            <Image src="/images/properties/kitchen.png" alt="White cabinetry and light finishes from the identical-build showcase." width={319} height={160} sizes="(max-width: 767px) 90vw, 30vw" className={styles.detailPhoto} />
-            <a href="#contact" className={styles.textLink}>Ask Ian about current homes <ArrowUpRightIcon aria-hidden="true" /></a>
-          </div>
-        </Reveal>
-        <p className={styles.disclosure}>Illustrative photos of an identical build. Actual finishes, colors, dimensions and features may vary. Ask Ian for current availability.</p>
-        </>} />
+        <PublishedListings />
       </div>
     </section>
     <section id="seller-support" tabIndex={-1} className={`${styles.section} ${styles.support}`} aria-labelledby="support-title">

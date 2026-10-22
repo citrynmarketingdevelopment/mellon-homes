@@ -10,6 +10,8 @@ async function main() {
   const name = process.env.ADMIN_BOOTSTRAP_NAME?.trim();
   if (!email || !adminEmails().includes(email) || !name || password.length < 12 || password.length > 128)
     throw new Error("Set an allowed admin email, name, and a password of 12–128 characters.");
+  const existing = await database().query('SELECT id FROM "user" WHERE lower(email)=$1', [email]);
+  if (existing.rowCount) { console.log("This account already exists; its password was not changed."); await database().end(); return; }
   // Registration is enabled only in this local CLI process, never on the website.
   await makeAuth(true).api.signUpEmail({ body: { email, password, name } });
   console.log("Admin account created. Clear ADMIN_BOOTSTRAP_PASSWORD from the environment.");

@@ -98,20 +98,16 @@ test("the cursor stays centered and disappears outside the hero", async ({ page 
   await expect(ring).not.toHaveAttribute("data-visible","");
 });
 
-test("navigation, gallery, specialist services and the complete pipeline work with a keyboard", async ({ page }) => {
+test("navigation, listing browser, specialist services and the complete pipeline work with a keyboard", async ({ page }) => {
   await page.goto("/");
   await page.getByRole("link",{name:"Find your home",exact:true}).focus();
   await page.keyboard.press("Enter");
   await expect(page).toHaveURL(/#mellon-properties$/);
   await expect(page.getByRole("heading",{name:"Fresh spaces. New possibilities."})).toBeInViewport();
-  await page.getByRole("button",{name:"View living room"}).focus();
+  await page.getByRole("button", { name: "For sale", exact: true }).focus();
   await page.keyboard.press("Enter");
-  await expect(page.getByRole("button",{name:"View living room"})).toHaveAttribute("aria-pressed","true");
-  await expect(page.getByText("Space for everyday life.",{exact:true})).toBeVisible();
-  await expect.poll(() => page.getByRole("img",{name:/Illustrative open living room/}).evaluate(node => (node as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
-  await page.getByRole("button",{name:"Next photograph"}).click();
-  await expect(page.getByRole("button",{name:"View kitchen"})).toHaveAttribute("aria-pressed","true");
-  await expect.poll(() => page.getByRole("img",{name:/Illustrative kitchen/}).evaluate(node => (node as HTMLImageElement).naturalWidth)).toBeGreaterThan(0);
+  await expect(page.getByRole("button", { name: "For sale", exact: true })).toHaveAttribute("aria-pressed", "true");
+  await expect(page.getByText("Let’s find your kind of home.")).toBeVisible();
   const support = page.locator("#seller-support");
   await support.scrollIntoViewIfNeeded();
   await expect(support.locator("article")).toHaveCount(4);
@@ -140,7 +136,7 @@ test("mobile tap tracking resets, menu navigation closes, and responsive layouts
   const context = await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true});
   await safeInput(context);
   const page = await context.newPage();
-  await page.goto("http://127.0.0.1:3010");
+  await page.goto("http://127.0.0.1:3014");
   const stage=page.getByRole("img",{name:mascotName});
   await expect(stage).toHaveAttribute("data-status","ready");
   const hero=(await page.locator("[data-hero]").boundingBox())!;
@@ -191,7 +187,7 @@ test("the page and all specialist information remain available without JavaScrip
   const context=await browser.newContext({javaScriptEnabled:false});
   await safeInput(context);
   const page=await context.newPage();
-  await page.goto("http://127.0.0.1:3010");
+  await page.goto("http://127.0.0.1:3014");
   const image=page.locator("[data-mascot-body] img");
   await expect(image).toBeVisible();
   expect(await image.evaluate(node=>(node as HTMLImageElement).naturalWidth)).toBe(1312);

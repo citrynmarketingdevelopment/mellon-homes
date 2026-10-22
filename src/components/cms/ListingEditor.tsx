@@ -5,6 +5,7 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import type { Listing, ListingData } from "@/lib/cms/validation";
 import styles from "@/app/admin/admin.module.css";
+import ConfirmDelete from "./ConfirmDelete";
 
 export default function ListingEditor({ initial }: { initial?: Listing }) {
   const router = useRouter();
@@ -19,7 +20,13 @@ export default function ListingEditor({ initial }: { initial?: Listing }) {
   const formRef = useRef<HTMLFormElement>(null);
   useEffect(() => {
     const warn = (event: BeforeUnloadEvent) => { if (dirty) event.preventDefault(); };
-    window.addEventListener("beforeunload", warn); return () => window.removeEventListener("beforeunload", warn);
+    const navigate = (event: MouseEvent) => {
+      const anchor = event.target instanceof Element ? event.target.closest<HTMLAnchorElement>("a[href]") : null;
+      if (!dirty || !anchor || anchor.target === "_blank" || event.metaKey || event.ctrlKey || event.shiftKey || anchor.pathname === location.pathname) return;
+      if (!window.confirm("Leave without saving your changes?")) { event.preventDefault(); event.stopPropagation(); }
+    };
+    window.addEventListener("beforeunload", warn); document.addEventListener("click", navigate, true);
+    return () => { window.removeEventListener("beforeunload", warn); document.removeEventListener("click", navigate, true); };
   }, [dirty]);
   async function upload(files: FileList | null) {
     if (!files?.length) return;
@@ -61,12 +68,13 @@ export default function ListingEditor({ initial }: { initial?: Listing }) {
     try {
       const response = await fetch(`/api/admin/listings/${saved.id}`, { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ revision: saved.revision }) });
       if (!response.ok) { const result = await response.json(); throw new Error(result.error); }
-      setDirty(false); router.replace("/admin"); router.refresh();
+      setDirty(false); router.replace("/admin/listings"); router.refresh();
     } catch (reason) { setError(reason instanceof Error ? reason.message : "Unable to delete."); setBusy(false); }
   }
   const field = (name: keyof ListingData, label: string, type = "text", extra: React.InputHTMLAttributes<HTMLInputElement> = {}) => <label>{label}<input name={name} type={type} defaultValue={String(initial?.[name] ?? (name === "state" ? "CA" : ""))} required {...extra} /></label>;
-  return <><Link href="/admin" className={styles.back} onClick={event => { if (dirty && !window.confirm("Leave without saving your changes?")) event.preventDefault(); }}>← All listings</Link><h1>{saved ? "A little room to refine." : "Make room for a new listing."}</h1><p>Fill in the details, add photos, and choose when to go live.</p>
+  return <><Link href="/admin/listings" className={styles.back}>← All listings</Link><div className={styles.pageHeading}><div><p className={styles.eyebrow}>MAKE ITS FIRST IMPRESSION COUNT</p><h1>{saved ? "Edit listing" : "New listing"}</h1><p>Add the essentials, show its best side, and publish when you’re ready.</p></div><span className={styles.badge} data-status={saved?.status ?? "draft"}>{saved?.status ?? "Unsaved draft"}</span></div>
     <form ref={formRef} className={styles.editor} onSubmit={save} onChange={() => setDirty(true)}>
+      <div className={styles.editorMain}>
       <fieldset disabled={busy || uploading} className={styles.fields}><legend>Property details</legend>
         {field("title", "Listing title", "text", { minLength: 3, maxLength: 120 })}
         {field("address", "Street address", "text", { maxLength: 180 })}
@@ -76,13 +84,15 @@ export default function ListingEditor({ initial }: { initial?: Listing }) {
         <label>Availability<select name="availability" defaultValue={initial?.availability ?? "For sale"}>{["For sale", "Pending", "Sold"].map(value => <option key={value}>{value}</option>)}</select></label></div>
         <label>Description<textarea name="description" required minLength={10} maxLength={8000} rows={7} defaultValue={initial?.description} /></label>
       </fieldset>
-      <section className={styles.panel} aria-labelledby="photos-heading"><h2 id="photos-heading">Give them a closer look.</h2><p>Up to 12 JPG, PNG, or WebP photos, 2 MB each. The first photo is the cover.</p><label className={styles.upload}>Add photos<input type="file" accept="image/jpeg,image/png,image/webp" multiple disabled={busy || uploading} onChange={event => { void upload(event.target.files); event.target.value = ""; }} /></label>
+      <section className={styles.panel} aria-labelledby="photos-heading"><h2 id="photos-heading">Property photos</h2><p>Up to 12 JPG, PNG, or WebP photos, 2 MB each. The first photo is the cover.</p><label className={styles.upload}>Add photos<input type="file" accept="image/jpeg,image/png,image/webp" multiple disabled={busy || uploading} onChange={event => { void upload(event.target.files); event.target.value = ""; }} /></label>
         <div className={styles.photos}>{photos.map((id, index) => <div key={id}><Image unoptimized src={`/api/photos/${id}`} alt={`Listing photo ${index + 1}`} width={240} height={170} /><div><button type="button" disabled={busy || uploading || index === 0} onClick={() => { setPhotos([id, ...photos.filter(photo => photo !== id)]); setDirty(true); }}>{index === 0 ? "Cover photo" : "Make cover"}</button><button type="button" disabled={busy || uploading} aria-label={`Remove photo ${index + 1}`} onClick={() => { setPhotos(photos.filter(photo => photo !== id)); setDirty(true); }}>Remove</button></div></div>)}</div><p role="status">{uploading ? "Uploading and optimizing photos…" : ""}</p>
       </section>
+      </div><aside className={styles.editorAside}>
       <fieldset className={styles.publish} disabled={busy || uploading}><legend>Visibility</legend><label>Publication status<select name="status" defaultValue={initial?.status ?? "draft"}><option value="draft">Draft — private</option><option value="published">Published — visible on website</option></select></label><label className={styles.check}><input type="checkbox" name="featured" defaultChecked={initial?.featured} />Feature this listing first</label><p className={styles.hint}>Switch a published listing to Draft to remove it from the public website.</p></fieldset>
       {error && <p role="alert" className={styles.error}>{error}</p>}{message && <p role="status" className={styles.success}>{message}</p>}
       <div className={styles.actions}><button className={styles.button} disabled={busy || uploading}>{busy ? "Saving…" : "Save listing"}</button>{saved?.status === "published" && <a className={styles.secondary} href={`/listings/${saved.id}`} target="_blank" rel="noreferrer">View public listing ↗</a>}{saved && <button type="button" className={styles.danger} disabled={busy || uploading} onClick={() => setConfirmDelete(true)}>Delete listing</button>}</div>
-      {confirmDelete && <div role="alert" className={styles.notice}><strong>Delete this listing permanently?</strong><p>This removes the listing from the website and admin dashboard.</p><div className={styles.actions}><button type="button" disabled={busy} className={styles.danger} onClick={remove}>Yes, delete listing</button><button type="button" disabled={busy} className={styles.secondary} onClick={() => setConfirmDelete(false)}>Keep listing</button></div></div>}
+      </aside>
+      {confirmDelete && <ConfirmDelete title={saved?.title ?? "This listing"} busy={busy} error={error} onConfirm={remove} onCancel={() => setConfirmDelete(false)} />}
     </form>
   </>;
 }

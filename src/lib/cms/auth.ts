@@ -1,9 +1,9 @@
 import { betterAuth } from "better-auth";
 import { database } from "./db";
-import { adminEmails, cmsConfigured } from "./config";
+import { adminEmails, authenticationConfigured, cmsConfigured } from "./config";
 
 export function makeAuth(bootstrap = false) {
-  if (!cmsConfigured()) throw new Error("CMS authentication is not configured.");
+  if (!authenticationConfigured()) throw new Error("CMS authentication is not configured.");
   return betterAuth({
     appName: "Mellon Admin",
     database: database(),
@@ -12,7 +12,7 @@ export function makeAuth(bootstrap = false) {
     emailAndPassword: { enabled: true, disableSignUp: !bootstrap, minPasswordLength: 12 },
     session: { expiresIn: 60 * 60 * 8, updateAge: 60 * 60, cookieCache: { enabled: false } },
     rateLimit: { enabled: true, storage: "database", window: 60, max: 60,
-      customRules: { "/sign-in/email": { window: 60, max: 5 } } },
+      customRules: { "/sign-in/email": { window: 60, max: 5 }, "/change-password": { window: 60, max: 5 } } },
     advanced: { ipAddress: { ipAddressHeaders: ["x-real-ip"] } },
   });
 }

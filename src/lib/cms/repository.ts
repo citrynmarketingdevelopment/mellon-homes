@@ -40,3 +40,9 @@ export async function deleteListing(id: string, revision: number) {
   const result = await database().query("DELETE FROM mellon_listings WHERE id=$1 AND revision=$2 RETURNING id", [id, revision]);
   return result.rowCount === 1;
 }
+
+export async function updateListingFlags(id: string, revision: number, changes: Partial<Pick<ListingData, "featured" | "status" | "availability">>) {
+  const result = await database().query<Row>("UPDATE mellon_listings SET data=data || $1::jsonb, revision=revision+1, updated_at=now() WHERE id=$2 AND revision=$3 RETURNING *", [JSON.stringify(changes), id, revision]);
+  if (!result.rows[0]) throw new Error("CONFLICT");
+  return listing(result.rows[0]);
+}
