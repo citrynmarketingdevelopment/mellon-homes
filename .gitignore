@@ -24,6 +24,10 @@
 .DS_Store
 *.pem
 
+# Local reference assets (at any directory level)
+reference/
+references/
+
 # debug
 npm-debug.log*
 yarn-debug.log*
