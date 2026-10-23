@@ -32,7 +32,7 @@ export default function AdminShell({ children, user }: { children: React.ReactNo
             return <Link key={href} href={href} aria-current={active ? "page" : undefined}><Icon weight={active ? "fill" : "regular"} aria-hidden="true" /><span>{label}</span>{active && <span className={styles.activeDot} aria-hidden="true" />}</Link>;
           })}
         </nav>
-        <div className={styles.sidebarBottom}><div className={styles.sidebarNote}><span className={styles.seedMark} aria-hidden="true" /><strong>A little care.<br />A fresh beginning.</strong><p>Your properties, thoughtfully presented.</p><Link href="/" className={styles.websiteLink}>View website <ArrowUpRightIcon aria-hidden="true" /></Link></div><SignOut /></div>
+        <div className={styles.sidebarBottom}><SignOut /></div>
       </aside>
       <header className={styles.topbar}><div><span className={styles.desktopOnly}>Workspace <span className={styles.crumbSlash}>/</span> </span><strong>{current}</strong></div><div className={styles.profile}><span className={styles.profileName}>{user?.name ?? "Administrator"}<small>Administrator</small></span><span className={styles.avatar} aria-hidden="true">{initials}</span></div></header>
     </>}
