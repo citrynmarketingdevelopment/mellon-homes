@@ -1,0 +1,27 @@
+{
+  "source": "reference\\gemini_generated_video_41490059.mp4",
+  "fps": 24,
+  "frames": 240,
+  "duration": 10,
+  "cropAt640px": [
+    120,
+    0,
+    500,
+    360
+  ],
+  "atlas": {
+    "columns": 16,
+    "rows": 15,
+    "tile": 160
+  },
+  "boundingBoxRange": [
+    122,
+    1,
+    449,
+    345,
+    148,
+    16,
+    477,
+    348
+  ]
+}

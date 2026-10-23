@@ -3,13 +3,12 @@
   --font-body: "DM Sans Variable", Arial, sans-serif;
   --mellon-green: #073f35;
   --mellon-mint: #c8ebd7;
-  --mellon-pink: #e577a4;
+  --mellon-pink: #f6b8cc;
   --mellon-cream: #fff9e9;
-  --mellon-pink-gradient: linear-gradient(105deg, #cb4d83 0%, #dc76a0 35%, #efa6c4 65%, #df7da7 100%);
   color-scheme: light;
 }
 * { box-sizing: border-box; }
-html { scroll-behavior: smooth; background: #e37ea7; }
+html { scroll-behavior: smooth; background: var(--mellon-pink); }
 body { margin: 0; min-width: 320px; font-family: var(--font-body); -webkit-font-smoothing: antialiased; }
 h1,h2,h3,p { margin: 0; }
 button,a { -webkit-tap-highlight-color: transparent; }

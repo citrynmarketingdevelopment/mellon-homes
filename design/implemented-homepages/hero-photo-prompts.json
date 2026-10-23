@@ -1,0 +1,12 @@
+{
+  "mode": "builtin",
+  "usage": "Illustrative hero photography; not listing photography",
+  "assets": [
+    "public/images/properties/hero-kitchen.png",
+    "public/images/properties/hero-exterior.png"
+  ],
+  "prompts": [
+    "Create a high-resolution photorealistic real estate editorial photograph, portrait 3:4 composition, of a beautiful modern California kitchen. Bright inviting real home, warm white shaker cabinets, light natural oak island, pale quartz counters, brushed brass hardware, soft natural daylight through a large window, one restrained vase of leafy branches, subtle oak flooring. The island and cabinetry are the clear focus with impeccable architectural lines, realistic materials and fine texture, professionally styled but believable, crisp foreground and background, premium residential property photography using a tilt-shift architectural lens. Eye-level view looking diagonally into the kitchen. No people, no text, no logos, no watermark, no graphic frame. This is a decorative website hero photograph for a warm playful real estate brokerage. Deliver a single standalone photograph with detail suitable for a sharp 400px-wide portrait crop on retina screens.",
+    "Create a high-resolution photorealistic real estate editorial photograph, portrait 3:4 composition, of a welcoming single-story contemporary California home at warm late afternoon. Natural cream stucco, light oak front door, dark bronze window frames, modest pitched roof, carefully planted drought-tolerant front garden, a clean curved walkway leading toward the inviting entrance, one small tree, glimpses of blue sky. Believable upscale Bakersfield / Central Valley residential setting, not a mansion. Professional architectural property photography, straight verticals, tack-sharp architectural and landscaping detail, realistic light and subtle warm interior glow. Eye-level three-quarter view, show the complete front entrance and enough garden in foreground, comfortable open space near image edges for cropping. No people, no cars, no text, no signage, no logos, no watermark, no graphic frame. Match a bright refined kitchen photograph in natural color and photographic quality. Single standalone photo."
+  ]
+}

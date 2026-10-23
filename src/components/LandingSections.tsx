@@ -23,18 +23,18 @@ const steps = [
   ["Take the next step.", "A practical direction, with personal support."],
 ];
 
-export default function LandingSections() {
-  return <div className={styles.landing}>
-    <div className={styles.brandRibbon} aria-label="People. Properties. Solutions. Fresh starts.">
+export default function LandingSections({ variant = "original" }: { variant?: "original" | "home2" | "home3" }) {
+  return <div className={styles.landing} data-home-variant={variant}>
+    {variant === "original" && <div className={styles.brandRibbon} aria-label="People. Properties. Solutions. Fresh starts.">
       {["People", "Properties", "Solutions", "Fresh starts"].map(word => <span key={word}>{word}<span aria-hidden="true">✳</span></span>)}
-    </div>
+    </div>}
     <section id="mellon-properties" tabIndex={-1} className={`${styles.section} ${styles.properties} ${listingStyles.homeSection}`} aria-labelledby="properties-title">
       <div className={styles.wrap}>
-        <Reveal className={listingStyles.sectionHeading}>
-          <div><p className={listingStyles.eyebrow}>THE MELLON COLLECTION</p><h2 id="properties-title">Fresh spaces.<br /><span>New possibilities.</span></h2></div>
-          <div><p>A place to put down roots.<br />Find your next chapter with Mellon.</p><Link href="/listings" className={listingStyles.headingLink}>Explore Mellon homes <ArrowUpRightIcon aria-hidden="true" /></Link></div>
+        <Reveal className={`${listingStyles.sectionHeading} ${variant !== "original" ? styles.alternateListingHeading : ""}`}>
+          <div>{variant !== "home3" && <p className={listingStyles.eyebrow}>{variant === "home2" ? "NEW LISTINGS" : "THE MELLON COLLECTION"}</p>}<h2 id="properties-title">{variant === "home2" ? "Fresh on the block." : variant === "home3" ? "New listings. Fresh possibilities." : <>Fresh spaces.<br /><span>New possibilities.</span></>}</h2></div>
+          <div>{variant === "original" && <p>A place to put down roots.<br />Find your next chapter with Mellon.</p>}<Link href="/listings" className={listingStyles.headingLink}>{variant === "original" ? "Explore Mellon homes" : "Explore all properties"} <ArrowUpRightIcon aria-hidden="true" /></Link></div>
         </Reveal>
-        <PublishedListings />
+        <PublishedListings contactHref="#contact" />
       </div>
     </section>
     <section id="seller-support" tabIndex={-1} className={`${styles.section} ${styles.support}`} aria-labelledby="support-title">

@@ -5,6 +5,7 @@ import MascotScene from "@/components/MascotScene";
 import HeroInteractions from "@/components/HeroInteractions";
 import LandingSections from "@/components/LandingSections";
 import WatermelonSeeds from "@/components/WatermelonSeeds";
+import HomeVersions from "@/components/HomeVersions";
 import styles from "@/components/hero.module.css";
 
 // Listings reflect publishing and unpublishing immediately, without a redeploy.
@@ -24,6 +25,7 @@ export default function Home() {
           <a href="#seller-support">Sell</a>
           <a href="#development">Development</a>
           <a href="#ian">Meet Ian</a>
+          <HomeVersions current="/" />
         </nav>
         <a href="#contact" className={styles.headerContact}>Let’s talk <ArrowUpRightIcon aria-hidden="true" /></a>
         <button type="button" className={styles.menuButton} data-menu-toggle aria-expanded="false" aria-controls="main-navigation" aria-label="Open navigation"><span /><span /></button>
