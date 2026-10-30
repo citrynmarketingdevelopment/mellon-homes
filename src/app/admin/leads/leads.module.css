@@ -1,0 +1,13 @@
+.list { padding:0 28px; }
+.lead { padding:26px 0; border-top:1px solid #d6e0d6; }
+.heading { display:flex; align-items:center; justify-content:space-between; gap:16px; }
+.heading h3 { font-size:19px; }
+.heading time { font-size:11px; color:#526b5e; }
+.address { font-size:15px; margin:12px 0; }
+.contact { display:flex; flex-wrap:wrap; gap:12px 26px; font-size:13px; }
+.contact a { text-decoration:underline; text-underline-offset:4px; overflow-wrap:anywhere; padding-block:8px; }
+.lead dl { display:grid; grid-template-columns:1fr 1fr; gap:18px; font-size:12px; margin:20px 0; }
+.lead dt { color:#526b5e; margin-bottom:6px; }
+.lead dd { margin:0; font-weight:600; }
+.consent { font-size:11px; color:#526b5e; }
+@media(max-width:767px) { .list { padding:0 20px; }.heading { display:block; }.heading time { display:block; margin-top:10px; }.lead dl { grid-template-columns:1fr; }.contact { display:block; }.contact a { display:block; } }

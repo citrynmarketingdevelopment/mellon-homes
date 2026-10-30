@@ -5,6 +5,7 @@ import { SquaresFourIcon } from "@phosphor-icons/react/dist/ssr/SquaresFour";
 import { BuildingsIcon } from "@phosphor-icons/react/dist/ssr/Buildings";
 import { PlusIcon } from "@phosphor-icons/react/dist/ssr/Plus";
 import { GearSixIcon } from "@phosphor-icons/react/dist/ssr/GearSix";
+import { EnvelopeSimpleIcon } from "@phosphor-icons/react/dist/ssr/EnvelopeSimple";
 import { ArrowUpRightIcon } from "@phosphor-icons/react/dist/ssr/ArrowUpRight";
 import SignOut from "./SignOut";
 import styles from "@/app/admin/admin.module.css";
@@ -13,6 +14,7 @@ const navigation = [
   { href: "/admin", label: "Overview", Icon: SquaresFourIcon },
   { href: "/admin/listings", label: "Listings", Icon: BuildingsIcon },
   { href: "/admin/listings/new", label: "New listing", Icon: PlusIcon },
+  { href: "/admin/leads", label: "Home value leads", Icon: EnvelopeSimpleIcon },
   { href: "/admin/password", label: "Account", Icon: GearSixIcon },
 ];
 export default function AdminShell({ children, user }: { children: React.ReactNode; user: { name: string; email: string } | null }) {

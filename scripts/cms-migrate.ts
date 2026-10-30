@@ -10,6 +10,7 @@ async function main() {
   const migration = await getMigrations(instance.options);
   await migration.runMigrations();
   await database().query(await readFile("database/cms.sql", "utf8"));
+  await database().query(await readFile("database/valuation.sql", "utf8"));
   console.log("CMS tables are ready.");
   await database().end();
 }

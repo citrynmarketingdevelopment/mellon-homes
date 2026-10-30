@@ -10,6 +10,8 @@ import Reveal from "./Reveal";
 import styles from "./landing.module.css";
 import PublishedListings from "./PublishedListings";
 import listingStyles from "./listings.module.css";
+import HomeValuation from "./HomeValuation";
+import DevelopmentShowcase from "./DevelopmentShowcase";
 
 const specialties = [
   { title: "Pre-foreclosure & delinquency", description: "Behind on payments? Talk through your property, your timeline, and the questions to raise with your lender.", Icon: HouseLineIcon },
@@ -25,18 +27,20 @@ const steps = [
 
 export default function LandingSections({ variant = "original" }: { variant?: "original" | "home2" | "home3" }) {
   return <div className={styles.landing} data-home-variant={variant}>
-    {variant === "original" && <div className={styles.brandRibbon} aria-label="People. Properties. Solutions. Fresh starts.">
-      {["People", "Properties", "Solutions", "Fresh starts"].map(word => <span key={word}>{word}<span aria-hidden="true">✳</span></span>)}
+    {variant === "original" && <div className={styles.brandRibbon} aria-label="Investments. Properties. Solutions. Fresh starts.">
+      {["Investments", "Properties", "Solutions", "Fresh starts"].map(word => <span key={word}>{word}<span aria-hidden="true">✳</span></span>)}
     </div>}
     <section id="mellon-properties" tabIndex={-1} className={`${styles.section} ${styles.properties} ${listingStyles.homeSection}`} aria-labelledby="properties-title">
       <div className={styles.wrap}>
         <Reveal className={`${listingStyles.sectionHeading} ${variant !== "original" ? styles.alternateListingHeading : ""}`}>
-          <div>{variant !== "home3" && <p className={listingStyles.eyebrow}>{variant === "home2" ? "NEW LISTINGS" : "THE MELLON COLLECTION"}</p>}<h2 id="properties-title">{variant === "home2" ? "Fresh on the block." : variant === "home3" ? "New listings. Fresh possibilities." : <>Fresh spaces.<br /><span>New possibilities.</span></>}</h2></div>
+          <div>{variant === "home2" && <p className={listingStyles.eyebrow}>NEW LISTINGS</p>}<h2 id="properties-title">{variant === "home2" ? "Fresh on the block." : variant === "home3" ? "New listings. Fresh possibilities." : <>Fresh spaces.<br /><span>New possibilities.</span></>}</h2></div>
           <div>{variant === "original" && <p>A place to put down roots.<br />Find your next chapter with Mellon.</p>}<Link href="/listings" className={listingStyles.headingLink}>{variant === "original" ? "Explore Mellon homes" : "Explore all properties"} <ArrowUpRightIcon aria-hidden="true" /></Link></div>
         </Reveal>
-        <PublishedListings contactHref="#contact" />
+        {variant === "original" && <div className={styles.collectionLabel}><h3>The Mellon Collection</h3><p>Our listings. Your next chapter.</p></div>}
+        <PublishedListings contactHref="#contact" valuationHref={variant === "original" ? "#home-value" : undefined} />
       </div>
     </section>
+    {variant === "original" && <HomeValuation instantAvailable={Boolean(process.env.RENTCAST_API_KEY)} />}
     <section id="seller-support" tabIndex={-1} className={`${styles.section} ${styles.support}`} aria-labelledby="support-title">
       <Reveal className={`${styles.wrap} ${styles.supportGrid}`}>
         <div className={styles.supportIntroduction}>
@@ -57,7 +61,7 @@ export default function LandingSections({ variant = "original" }: { variant?: "o
         </div>
       </Reveal>
     </section>
-    <section id="development" tabIndex={-1} className={`${styles.section} ${styles.development}`} aria-labelledby="development-title">
+    {variant === "original" ? <DevelopmentShowcase /> : <section id="development" tabIndex={-1} className={`${styles.section} ${styles.development}`} aria-labelledby="development-title">
       <div className={styles.wrap}>
         <Reveal className={`${styles.sectionHeading} ${styles.developmentHeading}`}>
           <div><p className={styles.eyebrow}>WHAT’S GROWING</p>
@@ -68,7 +72,7 @@ export default function LandingSections({ variant = "original" }: { variant?: "o
         <a href="#contact" className={`${styles.button} ${styles.pipelineCta}`}>Let’s talk about what’s next <ArrowUpRightIcon aria-hidden="true" /></a>
         <p className={styles.disclosure}>Project stages are shown as provided in the development flyer. Contact Ian for current status and availability.</p>
       </div>
-    </section>
+    </section>}
     <section id="ian" tabIndex={-1} className={`${styles.section} ${styles.broker}`} aria-labelledby="ian-title">
       <Reveal className={`${styles.wrap} ${styles.brokerGrid}`}>
         <div className={styles.brokerIntroduction}>

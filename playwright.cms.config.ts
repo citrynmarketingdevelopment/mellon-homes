@@ -9,9 +9,9 @@ if (testDatabase.hostname !== "127.0.0.1" || testDatabase.port !== "55438" || pr
   throw new Error("CMS tests require the isolated local database and app. Run scripts/cms-test-setup.ps1.");
 }
 export default defineConfig({
-  testDir: "./tests", testMatch: "cms.spec.ts", workers: 1, timeout: 90_000,
+  testDir: "./tests", testMatch: ["cms.spec.ts", "valuation-cms.spec.ts"], workers: 1, timeout: 90_000,
   expect: { timeout: 15_000 },
   use: { baseURL: "http://127.0.0.1:3012", channel: "chrome", screenshot: "only-on-failure" },
   // Exercise the actual production server, without development compile latency.
-  webServer: { command: "npm run start -- --port 3012 --hostname 127.0.0.1", url: "http://127.0.0.1:3012/admin/login", reuseExistingServer: false, env: { NEXT_DIST_DIR: ".next" }, timeout: 120_000 },
+  webServer: { command: "npm run start -- --port 3012 --hostname 127.0.0.1", url: "http://127.0.0.1:3012/admin/login", reuseExistingServer: false, env: { NEXT_DIST_DIR: ".next", RENTCAST_API_KEY: "", SMTP_HOST: "", VALUATION_SITE_ORIGIN: "" }, timeout: 120_000 },
 });

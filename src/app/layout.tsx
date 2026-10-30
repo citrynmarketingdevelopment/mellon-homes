@@ -5,7 +5,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Mellon Real Estate | A Fresh Slice of Home",
-  description: "Homes, development projects, and specialist seller support in Bakersfield and Shafter. Talk with California real estate broker Ian Mellon.",
+  description: "Homes, multifamily investments, new construction, and specialist seller support in Kern County. Talk with California real estate broker Ian Mellon.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

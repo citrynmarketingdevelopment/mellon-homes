@@ -5,7 +5,6 @@ import MascotScene from "@/components/MascotScene";
 import HeroInteractions from "@/components/HeroInteractions";
 import LandingSections from "@/components/LandingSections";
 import WatermelonSeeds from "@/components/WatermelonSeeds";
-import HomeVersions from "@/components/HomeVersions";
 import styles from "@/components/hero.module.css";
 
 // Listings reflect publishing and unpublishing immediately, without a redeploy.
@@ -25,7 +24,7 @@ export default function Home() {
           <a href="#seller-support">Sell</a>
           <a href="#development">Development</a>
           <a href="#ian">Meet Ian</a>
-          <HomeVersions current="/" />
+          <a href="#home-value">Home value</a>
         </nav>
         <a href="#contact" className={styles.headerContact}>Let’s talk <ArrowUpRightIcon aria-hidden="true" /></a>
         <button type="button" className={styles.menuButton} data-menu-toggle aria-expanded="false" aria-controls="main-navigation" aria-label="Open navigation"><span /><span /></button>
@@ -34,7 +33,7 @@ export default function Home() {
       <section className={styles.composition} aria-labelledby="hero-title">
         <WatermelonSeeds />
         <div className={styles.intro}>
-          <p className={styles.eyebrow}>BAKERSFIELD + SHAFTER REAL ESTATE</p>
+          <p className={styles.eyebrow}>KERN COUNTY REAL ESTATE</p>
           <h1 id="hero-title" tabIndex={-1}>A FRESH<br />SLICE OF<br />HOME.</h1>
           <p className={styles.description}>Fresh possibilities. Local guidance.<br />A place to call your own.</p>
           <div className={styles.actions}>
@@ -44,7 +43,7 @@ export default function Home() {
         </div>
         <div className={styles.rindBackdrop} aria-hidden="true" />
         <MascotScene />
-        <p className={styles.heroSignoff}>PEOPLE. PROPERTIES. SOLUTIONS.</p>
+        <p className={styles.heroSignoff}>INVESTMENTS. PROPERTIES. SOLUTIONS.</p>
       </section>
       <HeroInteractions />
     </section>

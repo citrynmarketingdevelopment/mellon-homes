@@ -1,4 +1,21 @@
 .landing { --cream:var(--mellon-cream); --green:var(--mellon-green); --mint:var(--mellon-mint); --blush:var(--mellon-pink); background:var(--cream); color:var(--green); }
+.landing[data-home-variant="original"] { --green:#103b2c; --gold:#d8b66f; }
+.landing[data-home-variant="original"] .brandRibbon { color:#e8cf98; }
+.landing[data-home-variant="original"] .brandRibbon > span > span { color:var(--blush); }
+.collectionLabel { display:flex; justify-content:space-between; align-items:center; gap:20px; padding:22px 0; border-top:1px solid #bca77466; margin-top:38px; }
+.landing .collectionLabel h3 { font:750 29px/1.2 var(--font-display); letter-spacing:-.03em; }
+.collectionLabel p { font-size:12px; color:#596951; }
+.landing[data-home-variant="original"] .support { background:#f0ecdf; color:var(--green); }
+.landing[data-home-variant="original"] .supportIntroduction .eyebrow { color:#806321; }
+.landing[data-home-variant="original"] .supportIntroduction .lead,.landing[data-home-variant="original"] .services p { color:#4f6355; }
+.landing[data-home-variant="original"] .services article { border-color:#bca77466; }
+.landing[data-home-variant="original"] .services a > svg { color:#876725; }
+.landing[data-home-variant="original"] .services a:hover h3 { color:#806321; }
+.landing[data-home-variant="original"] .support a:focus-visible { outline-color:var(--green); }
+.landing[data-home-variant="original"] .pinkButton { background:var(--green); color:var(--cream); }
+.landing[data-home-variant="original"] .broker { background:#f7f3e8; }
+.landing[data-home-variant="original"] .footer p { color:#e8cf98; }
+@media(max-width:767px) { .collectionLabel { display:block; margin-top:26px; }.landing .collectionLabel h3 { font-size:25px; }.collectionLabel p { margin-top:8px; } }
 .landing[data-home-variant="home2"] { --cream:#faf8f1; --green:#173f35; --mint:#d5f3d4; --alternate-heading-size:clamp(32px,3.34vw,48px); }
 .landing[data-home-variant="home3"] { --cream:#fffcf5; --green:#073f35; --mint:#d5f3d4; --alternate-heading-size:clamp(30px,2.78vw,40px); }
 .landing[data-home-variant="home2"] h2 { font-family:"Archivo Black",Arial,sans-serif; font-weight:400; text-transform:uppercase; letter-spacing:-.035em; }

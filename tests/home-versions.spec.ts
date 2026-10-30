@@ -1,9 +1,12 @@
 import { expect, test } from "@playwright/test";
 
-test("home versions navigate between the original and both alternatives", async ({ page }) => {
+test("version 1 is the selected homepage and the archived alternatives still link home", async ({ page }) => {
   const errors: string[] = [];
   page.on("pageerror", error => errors.push(error.message));
   await page.goto("/");
+  await expect(page.getByText("Home versions", { exact: true })).toHaveCount(0);
+  await expect(page.getByRole("navigation").getByRole("link", { name: "Home value", exact: true })).toHaveAttribute("href", "#home-value");
+  await page.goto("/home2");
   for (const [label, path, title] of [
     ["Home 2", "/home2", "BIG PLANS. FRESH STARTS."],
     ["Home 3", "/home3", "A fresh place to call home."],
@@ -13,6 +16,10 @@ test("home versions navigate between the original and both alternatives", async 
     await page.getByRole("link", { name: new RegExp(`^${label}`) }).click();
     await expect(page).toHaveURL(new RegExp(`${path}$`));
     await expect(page.locator("h1")).toHaveText(title, { useInnerText: true });
+    if (path === "/") {
+      await expect(page.getByText("Home versions", { exact: true })).toHaveCount(0);
+      continue;
+    }
     await page.getByText("Home versions", { exact: true }).click();
     await expect(page.getByRole("link", { name: new RegExp(`^${label}`) })).toHaveAttribute("aria-current", "page");
     await page.keyboard.press("Escape");
