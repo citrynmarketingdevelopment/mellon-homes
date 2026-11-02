@@ -21,15 +21,19 @@ export default async function DevelopmentShowcase() {
       </Reveal>
       <Reveal className={styles.showcase}>
         <figure className={styles.exterior}>
-          <Image src="/images/properties/exterior.png" alt="Illustrative multifamily exterior with white stucco, dark roofing, and separate entrances." width={1280} height={470} sizes="(max-width: 767px) 90vw, 75vw" />
+          <Image src="/images/home/front.webp" alt="White stucco home with dark roof trim and a landscaped front entrance at sunset." width={1280} height={470} sizes="(max-width: 767px) 90vw, 75vw" />
           <figcaption>Room to live. Room to invest.</figcaption>
         </figure>
         <div className={styles.interiors}>
-          <figure><Image src="/images/properties/living.png" alt="Illustrative open living space with wood-look floors and generous natural light." width={319} height={160} sizes="(max-width: 767px) 44vw, 22vw" /><figcaption>Open, livable layouts</figcaption></figure>
-          <figure><Image src="/images/properties/kitchen.png" alt="Illustrative kitchen with light counters and white cabinetry." width={319} height={160} sizes="(max-width: 767px) 44vw, 22vw" /><figcaption>Thoughtful everyday finishes</figcaption></figure>
+          {[
+            ["patio", "Covered patio beside the white stucco home at sunset.", "Space to unwind"],
+            ["entry", "Front entrance and driveway framed by drought-tolerant landscaping.", "A welcoming arrival"],
+            ["covered-patio", "Sheltered outdoor seating area with dark roof trim.", "Indoor-outdoor living"],
+            ["side", "Side walkway and exterior of the home in warm evening light.", "A closer look"],
+          ].map(([photo, alt, caption]) => <figure key={photo}><Image src={`/images/home/${photo}.webp`} alt={alt} width={600} height={400} sizes="(max-width: 767px) 44vw, 20vw" /><figcaption>{caption}</figcaption></figure>)}
         </div>
       </Reveal>
-      <p className={styles.imageNote}>Illustrative build imagery. Individual plans, finishes, and availability vary by property.</p>
+      <p className={styles.imageNote}>Individual plans, finishes, and availability vary by property.</p>
       <div className={styles.benefits}>
         <div><BuildingsIcon aria-hidden="true" /><span>Purpose-built<br /><strong>Multifamily opportunities</strong></span></div>
         <div><KeyIcon aria-hidden="true" /><span>A place of your own<br /><strong>Owner-occupant potential</strong></span></div>
