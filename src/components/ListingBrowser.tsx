@@ -14,7 +14,7 @@ import type { Listing } from "@/lib/cms/validation";
 import ListingPreview from "./ListingPreview";
 import styles from "./listings.module.css";
 
-export type PublicListing = Pick<Listing, "id" | "title" | "address" | "city" | "state" | "zip" | "price" | "beds" | "baths" | "sqft" | "propertyType" | "availability" | "featured" | "createdAt" | "description" | "photos"> & { cover: string };
+export type PublicListing = Pick<Listing, "id" | "title" | "address" | "city" | "state" | "zip" | "price" | "beds" | "baths" | "sqft" | "lotSize" | "pool" | "spa" | "propertyType" | "availability" | "featured" | "createdAt" | "description" | "photos"> & { cover: string };
 const availabilityFilters = ["All homes", "For sale", "Pending", "Sold"] as const;
 export default function ListingBrowser({ listings, all = false, contactHref = "/#contact", valuationHref }: { listings: PublicListing[]; all?: boolean; contactHref?: string; valuationHref?: string }) {
   const [query, setQuery] = useState("");

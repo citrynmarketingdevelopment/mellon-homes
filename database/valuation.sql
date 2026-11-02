@@ -12,3 +12,5 @@ CREATE TABLE IF NOT EXISTS mellon_valuation_usage (
   count integer NOT NULL DEFAULT 1,
   expires_at timestamptz NOT NULL
 );
+
+ALTER TABLE mellon_valuation_leads ADD COLUMN IF NOT EXISTS confirmation_status text NOT NULL DEFAULT 'pending';

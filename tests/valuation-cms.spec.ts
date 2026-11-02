@@ -1,9 +1,18 @@
 import { test, expect } from "@playwright/test";
 import { readFile } from "node:fs/promises";
+import { createHash } from "node:crypto";
 import { database } from "../src/lib/cms/db";
 
 const email = "valuation-browser-test@example.test";
-test.beforeAll(async () => { await database().query(await readFile("database/valuation.sql", "utf8")); });
+// Each test starts with a fresh login allowance in the disposable local database.
+test.beforeEach(async () => { await database().query('DELETE FROM "rateLimit"'); });
+test.beforeAll(async () => {
+  await database().query(await readFile("database/valuation.sql", "utf8"));
+  await database().query("DELETE FROM mellon_valuation_leads WHERE data->>'email' = $1", [email]);
+  // Repeated local runs must not inherit the previous run's hourly allowance.
+  const hash = (value: string) => createHash("sha256").update(value).digest("hex");
+  await database().query("DELETE FROM mellon_valuation_usage WHERE key LIKE $1 OR key LIKE $2", [`email:${hash(email)}:%`, `ip:${hash("shared") }:%`]);
+});
 test.afterAll(async () => {
   await database().query("DELETE FROM mellon_valuation_leads WHERE data->>'email' = $1", [email]);
   await database().end();
@@ -36,8 +45,8 @@ test("a homeowner request reaches the database and the private broker inbox", as
   await page.getByRole("link", { name: "Home value leads", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Valuation Browser Test" })).toBeVisible();
   await expect(page.getByRole("link", { name: email })).toHaveAttribute("href", `mailto:${email}`);
-  await expect(page.getByText("SMTP not configured; follow up from this inbox")).toBeVisible();
+  await expect(page.getByText("SMTP.com not configured; follow up from this inbox", { exact: false }).first()).toBeVisible();
   await page.setViewportSize({ width: 390, height: 844 });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-  await page.screenshot({ path: "design/home1-green-gold/mobile-lead-inbox.png", fullPage: true });
+  await page.screenshot({ path: ".cms-test/mobile-lead-inbox.png", fullPage: true });
 });

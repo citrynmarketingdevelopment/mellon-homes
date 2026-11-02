@@ -1,8 +1,11 @@
 import { test, expect } from "@playwright/test";
 import { database } from "../src/lib/cms/db";
 
+// Each test starts with a fresh login allowance in the disposable local database.
+test.beforeEach(async () => { await database().query('DELETE FROM "rateLimit"'); });
+
 async function cleanFixture() {
-  await database().query("DELETE FROM mellon_listings WHERE data->>'title'=$1", ["CMS integration test home"]);
+  await database().query("DELETE FROM mellon_listings WHERE data->>'address'=$1", ["100 Test Street"]);
 }
 test.beforeAll(cleanFixture);
 test.afterAll(async () => { await cleanFixture(); await database().end(); });
@@ -20,7 +23,7 @@ test("admin manages a listing through its entire public lifecycle", async ({ pag
   });
   expect(invalidPhoto.status()).toBe(400);
   await page.getByRole("navigation", { name: "Admin navigation" }).getByRole("link", { name: "New listing", exact: true }).click();
-  await page.getByLabel("Listing title").fill("CMS integration test home");
+  await expect(page.getByLabel("Listing title")).toHaveCount(0);
   await page.getByLabel("Street address").fill("100 Test Street");
   await page.getByLabel("City", { exact: true }).fill("Bakersfield");
   await page.getByLabel("ZIP code").fill("93301");
@@ -28,6 +31,9 @@ test("admin manages a listing through its entire public lifecycle", async ({ pag
   await page.getByLabel("Bedrooms").fill("3");
   await page.getByLabel("Bathrooms").fill("2.5");
   await page.getByLabel("Area (sq ft)").fill("1800");
+  await page.getByLabel("Lot size (sq ft)").fill("7500");
+  await page.getByLabel("Pool", { exact: true }).selectOption("yes");
+  await page.getByLabel("Spa", { exact: true }).selectOption("no");
   await page.getByLabel("Description", { exact: true }).fill("Disposable integration test listing, never published to the live site.");
   await page.getByLabel("Add photos").setInputFiles(["public/images/properties/exterior.png", "public/images/properties/exterior.png"]);
   await expect(page.getByAltText("Listing photo 2")).toBeVisible();
@@ -38,23 +44,26 @@ test("admin manages a listing through its entire public lifecycle", async ({ pag
   await expect(page).toHaveURL(/\/admin\/listings\/[a-f0-9-]{36}$/);
   const id = page.url().split("/").at(-1)!;
   const saved = (await database().query("SELECT data FROM mellon_listings WHERE id=$1", [id])).rows[0].data;
+  expect(saved).toMatchObject({ title: "100 Test Street", lotSize: 7500, pool: true, spa: false });
   const photo = saved.photos[0];
   const missingPhoto = await page.request.post("/api/admin/listings", { headers: { Origin: "http://127.0.0.1:3012" }, data: { ...saved, status: "published", photos: [] } });
   expect(missingPhoto.status()).toBe(400);
-  await page.screenshot({ path: "design/cms-previews/editor-desktop.png", fullPage: true });
+  await page.screenshot({ path: ".cms-test/cms-previews/editor-desktop.png", fullPage: true });
   await page.setViewportSize({ width: 390, height: 844 });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
-  await page.screenshot({ path: "design/cms-previews/editor-mobile.png", fullPage: true });
+  await page.screenshot({ path: ".cms-test/cms-previews/editor-mobile.png", fullPage: true });
   await page.setViewportSize({ width: 1280, height: 720 });
   expect((await request.get(`/listings/${id}`)).status()).toBe(404);
+  expect(await (await request.get("/sitemap.xml")).text()).not.toContain(`/listings/${id}`);
   expect((await request.get(`/api/photos/${photo}`)).status()).toBe(404);
-  expect(await (await request.get("/")).text()).not.toContain("CMS integration test home");
+  expect(await (await request.get("/")).text()).not.toContain("100 Test Street");
   await page.getByLabel("Publication status").selectOption("published");
   await page.getByRole("button", { name: "Save listing" }).click();
   await expect(page.getByRole("status").filter({ hasText: "Published." })).toBeVisible();
-  expect(await (await request.get("/")).text()).toContain("CMS integration test home");
-  expect(await (await request.get("/listings")).text()).toContain("CMS integration test home");
+  expect(await (await request.get("/")).text()).toContain("100 Test Street");
+  expect(await (await request.get("/listings")).text()).toContain("100 Test Street");
   expect((await request.get(`/listings/${id}`)).status()).toBe(200);
+  expect(await (await request.get("/sitemap.xml")).text()).toContain(`https://mellonhomes.com/listings/${id}`);
   const image = await request.get(`/api/photos/${photo}`);
   expect(image.status()).toBe(200); expect(image.headers()["content-type"]).toBe("image/webp");
   await page.getByLabel("Price ($)").fill("460000");
@@ -68,12 +77,13 @@ test("admin manages a listing through its entire public lifecycle", async ({ pag
   await page.getByRole("button", { name: "Save listing" }).click();
   await expect(page.getByRole("status").filter({ hasText: "Draft saved." })).toBeVisible();
   expect((await request.get(`/listings/${id}`)).status()).toBe(404);
+  expect(await (await request.get("/sitemap.xml")).text()).not.toContain(`/listings/${id}`);
   expect((await request.get(`/api/photos/${photo}`)).status()).toBe(404);
   await page.reload(); await expect(page.getByLabel("Price ($)")).toHaveValue("460000");
   await page.getByRole("link", { name: "All listings" }).click();
   await expect(page).toHaveURL(/\/admin\/listings$/);
   const row = page.locator(`[data-listing-id="${id}"]`);
-  const feature = row.getByRole("switch", { name: "Feature CMS integration test home" });
+  const feature = row.getByRole("switch", { name: "Feature 100 Test Street" });
   await feature.click(); await expect(feature).toHaveAttribute("aria-checked", "true");
   await page.reload(); await expect(feature).toHaveAttribute("aria-checked", "true");
   await page.getByLabel("Search listings", { exact: true }).fill("does-not-exist");
@@ -82,11 +92,11 @@ test("admin manages a listing through its entire public lifecycle", async ({ pag
   await expect(row).toBeVisible();
   const staleFlags = await page.request.patch(`/api/admin/listings/${id}`, { headers: { Origin: "http://127.0.0.1:3012" }, data: { revision: 1, changes: { featured: false } } });
   expect(staleFlags.status()).toBe(409);
-  await row.getByLabel("Publication status for CMS integration test home").selectOption("published");
+  await row.getByLabel("Publication status for 100 Test Street").selectOption("published");
   await expect(page.getByRole("status")).toContainText("updated.");
   const publicPage = await page.context().browser()!.newPage({ viewport: { width: 375, height: 812 }, hasTouch: true });
   await publicPage.goto("http://127.0.0.1:3012/listings");
-  await expect(publicPage.getByRole("heading", { name: "CMS integration test home" })).toBeVisible();
+  await expect(publicPage.getByRole("heading", { name: "100 Test Street" })).toBeVisible();
   await publicPage.getByLabel("Search homes").fill("no matching place");
   await expect(publicPage.getByText("A fresh search might do it.")).toBeVisible();
   await publicPage.getByRole("button", { name: "Clear filters" }).click();
@@ -94,24 +104,27 @@ test("admin manages a listing through its entire public lifecycle", async ({ pag
   await expect(publicPage.getByText("A fresh search might do it.")).toBeVisible();
   await publicPage.getByRole("button", { name: "All homes", exact: true }).click();
   expect(await publicPage.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-  await publicPage.screenshot({ path: "design/cms-previews/public-listings-mobile.png", fullPage: true });
-  const card = publicPage.getByRole("link").filter({ has: publicPage.getByRole("heading", { name: "CMS integration test home" }) });
+  await publicPage.screenshot({ path: ".cms-test/cms-previews/public-listings-mobile.png", fullPage: true });
+  const card = publicPage.getByRole("link").filter({ has: publicPage.getByRole("heading", { name: "100 Test Street" }) });
   await card.focus();
   const browsePosition = await publicPage.evaluate(() => window.scrollY);
   await publicPage.keyboard.press("Enter");
-  const preview = publicPage.getByRole("dialog", { name: "CMS integration test home" });
+  const preview = publicPage.getByRole("dialog", { name: "100 Test Street" });
   await expect(preview).toBeVisible();
   await expect(preview.getByRole("button", { name: "Close property preview" })).toBeFocused();
   await publicPage.keyboard.press("Shift+Tab");
-  await expect(preview.getByRole("link", { name: "Ask Ian about this home" })).toBeFocused();
+  await expect(preview.getByRole("link", { name: "Schedule a Showing" })).toBeFocused();
   await publicPage.keyboard.press("Tab");
   await expect(preview.getByRole("button", { name: "Close property preview" })).toBeFocused();
   await expect(preview.getByText("$460,000", { exact: true })).toBeVisible();
-  await expect(preview.getByAltText("CMS integration test home, photo 1")).toBeVisible();
+  await expect(preview.getByText("Lot: 7,500 sq ft")).toBeVisible();
+  await expect(preview.getByText("Pool: Yes")).toBeVisible();
+  await expect(preview.getByText("Spa: No")).toBeVisible();
+  await expect(preview.getByAltText("100 Test Street, photo 1")).toBeVisible();
   await preview.getByRole("button", { name: "Next property photo" }).click();
-  await expect(preview.getByAltText("CMS integration test home, photo 2")).toBeVisible();
+  await expect(preview.getByAltText("100 Test Street, photo 2")).toBeVisible();
   await preview.getByRole("button", { name: "Previous property photo" }).click();
-  await expect(preview.getByAltText("CMS integration test home, photo 1")).toBeVisible();
+  await expect(preview.getByAltText("100 Test Street, photo 1")).toBeVisible();
   await preview.getByText("About this home", { exact: true }).click();
   await expect(preview.getByText("Disposable integration test listing, never published to the live site.")).toBeVisible();
   for (const viewport of [{ width: 375, height: 812 }, { width: 812, height: 375 }, { width: 1440, height: 900 }]) {
@@ -122,15 +135,15 @@ test("admin manages a listing through its entire public lifecycle", async ({ pag
     expect(bounds.y).toBeGreaterThanOrEqual(0);
     expect(bounds.x + bounds.width).toBeLessThanOrEqual(viewport.width);
     expect(bounds.y + bounds.height).toBeLessThanOrEqual(viewport.height);
-    await expect(preview.getByRole("link", { name: "Ask Ian about this home" })).toBeInViewport();
-    await publicPage.screenshot({ path: `design/cms-previews/property-preview-${viewport.width}.png` });
+    await expect(preview.getByRole("link", { name: "Schedule a Showing" })).toBeInViewport();
+    await publicPage.screenshot({ path: `.cms-test/cms-previews/property-preview-${viewport.width}.png` });
   }
   await publicPage.setViewportSize({ width: 375, height: 812 });
   await publicPage.emulateMedia({ reducedMotion: "reduce" });
   await publicPage.addStyleTag({ content: "html { font-size: 24px; }" });
   expect(await preview.evaluate(node => getComputedStyle(node).animationName)).toBe("none");
   expect(await publicPage.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-  await expect(preview.getByRole("link", { name: "Ask Ian about this home" })).toBeInViewport();
+  await expect(preview.getByRole("link", { name: "Schedule a Showing" })).toBeInViewport();
   await publicPage.keyboard.press("Escape");
   await expect(preview).toHaveCount(0);
   await expect(card).toBeFocused();
@@ -144,12 +157,12 @@ test("admin manages a listing through its entire public lifecycle", async ({ pag
   await expect(preview).toHaveCount(0);
   // The homepage uses the same popup without inheriting its larger heading styles.
   await publicPage.goto("http://127.0.0.1:3012/");
-  await publicPage.getByRole("link").filter({ has: publicPage.getByRole("heading", { name: "CMS integration test home" }) }).click();
+  await publicPage.getByRole("link").filter({ has: publicPage.getByRole("heading", { name: "100 Test Street" }) }).click();
   await expect(preview).toBeVisible();
   expect(await preview.getByRole("heading").evaluate(node => parseFloat(getComputedStyle(node).fontSize))).toBeLessThan(25);
   await preview.getByRole("button", { name: "Close property preview" }).click();
   await expect(preview).toHaveCount(0);
-  await publicPage.getByRole("link").filter({ has: publicPage.getByRole("heading", { name: "CMS integration test home" }) }).tap();
+  await publicPage.getByRole("link").filter({ has: publicPage.getByRole("heading", { name: "100 Test Street" }) }).tap();
   await expect(preview).toBeVisible();
   const handle = (await preview.locator("header > div").boundingBox())!;
   const touch = await publicPage.context().newCDPSession(publicPage);
@@ -160,7 +173,7 @@ test("admin manages a listing through its entire public lifecycle", async ({ pag
   await expect(preview).toHaveCount(0);
   await touch.detach();
   await publicPage.setViewportSize({ width: 1440, height: 900 });
-  await publicPage.getByRole("link").filter({ has: publicPage.getByRole("heading", { name: "CMS integration test home" }) }).click();
+  await publicPage.getByRole("link").filter({ has: publicPage.getByRole("heading", { name: "100 Test Street" }) }).click();
   await expect(preview).toBeVisible();
   await publicPage.mouse.click(10, 10);
   await expect(preview).toHaveCount(0);
@@ -168,19 +181,19 @@ test("admin manages a listing through its entire public lifecycle", async ({ pag
   for (const viewport of [{ width: 375, height: 812 }, { width: 812, height: 375 }, { width: 1440, height: 900 }]) {
     await page.setViewportSize(viewport);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
-    await expect(row.getByRole("button", { name: "Delete CMS integration test home" })).toBeVisible();
+    await expect(row.getByRole("button", { name: "Delete 100 Test Street" })).toBeVisible();
   }
   await page.emulateMedia({ reducedMotion: "reduce" });
   await page.setViewportSize({ width: 375, height: 812 });
   await page.addStyleTag({ content: "html { font-size: 20px; }" });
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await page.reload(); await page.setViewportSize({ width: 1440, height: 900 });
-  await page.screenshot({ path: "design/cms-previews/manager-desktop.png", fullPage: true });
-  await row.getByRole("button", { name: "Delete CMS integration test home" }).click();
+  await page.screenshot({ path: ".cms-test/cms-previews/manager-desktop.png", fullPage: true });
+  await row.getByRole("button", { name: "Delete 100 Test Street" }).click();
   await expect(page.getByRole("dialog")).toBeVisible(); await page.keyboard.press("Escape");
   await expect(page.getByRole("dialog")).toHaveCount(0);
-  await expect(row.getByRole("button", { name: "Delete CMS integration test home" })).toBeFocused();
-  await row.getByRole("button", { name: "Delete CMS integration test home" }).click();
+  await expect(row.getByRole("button", { name: "Delete 100 Test Street" })).toBeFocused();
+  await row.getByRole("button", { name: "Delete 100 Test Street" }).click();
   await page.getByRole("button", { name: "Yes, delete listing" }).click();
   await expect(row).toHaveCount(0);
   expect((await database().query("SELECT id FROM mellon_listings WHERE id=$1", [id])).rowCount).toBe(0);

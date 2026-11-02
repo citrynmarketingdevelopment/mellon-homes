@@ -1,0 +1,31 @@
+{
+  "mode": "Built-in ChatGPT image generation",
+  "generatedOn": "2026-11-02",
+  "images": [
+    {
+      "slug": "pre-foreclosure",
+      "prompt": "Use case: photorealistic-natural. Asset: editorial hero photograph for a Bakersfield California real estate service page about selling a home before foreclosure. Create a wide landscape 3:2 architectural photograph of a welcoming modest single-story cream stucco ranch house in California's southern Central Valley, dark forest green front door, soft pink bougainvillea, drought-tolerant planting, mature shade tree, clean concrete path leading toward the open porch, modest flat suburban landscape. Warm late-afternoon natural sunlight, calm optimistic reassuring atmosphere, realistic materials and residential proportions, premium understated editorial real estate photography, natural greens cream and warm gold. Show the complete entry with breathing room at all edges for responsive crops. No people, no text, no logos, no watermark, no for-sale signs, no dramatic mountains, no mansion. Illustrative home, not an identifiable real listing.",
+      "path": "public/images/specialties/pre-foreclosure.webp"
+    },
+    {
+      "slug": "probate",
+      "prompt": "Use case: photorealistic-natural. Asset: editorial hero photograph for a Bakersfield California real estate page about inherited property and probate. Wide landscape 3:2 photograph of a warm, well-cared-for older California ranch home's living room looking toward a bright garden, oak console, one comfortable ivory armchair, modest wooden shelving with a few books, a ceramic vase with olive branches, sheer ivory curtains, subtle dark green upholstery and muted blush cushion. Respectful lived-in atmosphere, quiet natural afternoon sunlight and soft shadows, slightly nostalgic but hopeful, real architectural proportions and natural textures, professional editorial photography. No people, no text, no logos, no watermarks, no visible family portraits, no paperwork, no staged luxury excess. Compose with safe margins for responsive cropping.",
+      "path": "public/images/specialties/probate.webp"
+    },
+    {
+      "slug": "short-sale",
+      "prompt": "Use case: photorealistic-natural. Asset: editorial hero photograph for a Bakersfield Kern County real estate page about short sales. Wide landscape 3:2 professional editorial photograph of a modest attractive Central Valley California single-story bungalow viewed from the front garden, pale cream stucco, sage green trim, a small covered porch, low drought-tolerant landscaping with soft pink flowering shrubs, one mature tree at the side. Clear gentle morning light, reassuring realistic everyday home, subtle warm gold tones, forest green foliage, tasteful home magazine photography. Entire house framed with generous margins. No people, no text, no signs, no logos, no watermarks, no mountains or coastal scenery, no mansion, no sale claims. Fictional illustrative property.",
+      "path": "public/images/specialties/short-sale.webp"
+    },
+    {
+      "slug": "divorce",
+      "prompt": "Use case: photorealistic-natural. Asset: editorial hero photograph for a Bakersfield real estate page about selling a house during divorce, with a calm respectful fresh-start theme. Wide landscape 3:2 interior architectural photograph of a bright California ranch-home breakfast room with a round natural oak table and two separated forest-green chairs, open doorway toward a sunlit garden, warm cream walls, a small vase of olive branches, subtle blush ceramic accent, soft afternoon shadows across a pale wood floor. Peaceful, neutral, uncluttered, emotionally reassuring, premium but attainable editorial residential photography. Realistic scale and texture. No people, no divorce documents, no wedding rings, no text, no logo, no watermark, no luxury mansion. Compose safely for responsive crops.",
+      "path": "public/images/specialties/divorce.webp"
+    },
+    {
+      "slug": "foreclosure-solutions",
+      "prompt": "Use case: photorealistic-natural. Asset: editorial hero photograph for a California Kern County real estate page about foreclosure property solutions. Wide landscape 3:2 professional architectural photograph looking along a modest home's sunlit garden path toward a welcoming covered entrance with a deep forest-green door, light cream stucco, a natural wood bench, one terracotta planter and pale pink climbing flowers, dry-climate California landscaping. Quiet, practical, reassuring sense of a path forward. Natural late-afternoon sunlight with warm gold highlights and realistic shadows, lived-in residential detail, carefully composed editorial home photography. No people, no text, no notices, no signage, no logos, no watermark, no mansion, no beach or mountains. Wide comfortable framing and safe crop margins.",
+      "path": "public/images/specialties/foreclosure-solutions.webp"
+    }
+  ]
+}

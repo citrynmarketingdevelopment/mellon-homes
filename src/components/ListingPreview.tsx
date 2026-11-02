@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import PropertyDetails from "./PropertyDetails";
 import Link from "next/link";
 import { useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
@@ -119,14 +120,14 @@ export default function ListingPreview({ listing, onClose }: { listing: PublicLi
               <div><BathtubIcon aria-hidden="true" /><dt>Bathrooms</dt><dd>{listing.baths}</dd></div>
               <div><RulerIcon aria-hidden="true" /><dt>Sq ft</dt><dd>{listing.sqft.toLocaleString("en-US")}</dd></div>
             </dl>
-            <details className={styles.about}><summary>About this home<CaretRightIcon aria-hidden="true" /></summary><p>{listing.description}</p></details>
+            <div className={styles.extraFacts}><PropertyDetails lotSize={listing.lotSize} pool={listing.pool} spa={listing.spa} /></div><details className={styles.about}><summary>About this home<CaretRightIcon aria-hidden="true" /></summary><p>{listing.description}</p></details>
             <Link href={`/listings/${listing.id}`} className={styles.fullListing}>View full listing<ArrowUpRightIcon aria-hidden="true" /></Link>
           </div>
         </div>
 
         <footer className={styles.footer}>
           <div className={styles.broker}><span className={styles.avatar} aria-hidden="true">IM</span><div><strong>Ian Mellon</strong><span>Broker · DRE #01921587</span></div></div>
-          <a className={styles.contact} href={`mailto:ianmellon@yahoo.com?subject=${encodeURIComponent(`Property inquiry: ${listing.address}`)}`}>Ask Ian about this home<ArrowUpRightIcon aria-hidden="true" /></a>
+          {listing.availability === "Sold" ? <a className={styles.contact} href={`mailto:ianmellon@yahoo.com?subject=${encodeURIComponent(`Property inquiry: ${listing.address}`)}`}>Ask Ian about this home<ArrowUpRightIcon aria-hidden="true" /></a> : <Link className={styles.contact} href={`/listings/${listing.id}#schedule-showing`}>Schedule a Showing<ArrowUpRightIcon aria-hidden="true" /></Link>}
         </footer>
       </div>
     </dialog>,

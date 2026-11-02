@@ -15,7 +15,7 @@ const setup = new Pool({ connectionString: url.toString() });
 await setup.query(`CREATE SCHEMA "${schema}"`);
 url.searchParams.set("options", `-c search_path=${schema}`);
 process.env.DATABASE_URL = url.toString();
-delete process.env.SMTP_HOST; delete process.env.RENTCAST_API_KEY;
+delete process.env.SMTP_API; delete process.env.SMTP_HOST; delete process.env.RENTCAST_API_KEY;
 const { database } = await import("../src/lib/cms/db");
 const { submitValuation, LeadError } = await import("../src/lib/valuation/service");
 const originalFetch = globalThis.fetch;
@@ -25,6 +25,7 @@ const base = (overrides: Partial<ValuationLead> = {}): ValuationLead => ({
 });
 try {
   await database().query(await readFile("database/valuation.sql", "utf8"));
+  await database().query(await readFile("database/property-updates.sql", "utf8"));
   const noLoan = base();
   assert.equal(parseValuation({ price: 500000 }, noLoan).equity, undefined);
   assert.equal(parseValuation({ price: 500000 }, base({ loanBalance: 0 })).equity, 500000);

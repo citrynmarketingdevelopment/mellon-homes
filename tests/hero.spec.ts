@@ -110,7 +110,7 @@ test("navigation, listing browser, specialist services and the complete pipeline
   await expect(page.getByText("Let’s find your kind of home.")).toBeVisible();
   const support = page.locator("#seller-support");
   await support.scrollIntoViewIfNeeded();
-  await expect(support.locator("article")).toHaveCount(4);
+  await expect(support.locator("article")).toHaveCount(5);
   for (const name of ["Pre-foreclosure & delinquency", "Probate", "Divorce", "Short sales"]) {
     await expect(support.getByRole("heading", {name, exact:true})).toBeVisible();
   }
@@ -129,7 +129,7 @@ test("navigation, listing browser, specialist services and the complete pipeline
   await expect(page).toHaveURL(/#contact$/);
   await expect(page.getByRole("heading",{name:"Find your kind of neighborhood."})).toHaveCount(0);
   await expect(page.locator('a[href*="realtor.com"]')).toHaveCount(0);
-  await expect(page.locator('a[href="tel:+16618052481"]')).toHaveCount(1);
+  await expect(page.locator('a[href="tel:+16618052481"]')).toHaveCount(2);
 });
 
 test("mobile tap tracking resets, menu navigation closes, and responsive layouts fit", async ({ browser }) => {
@@ -193,7 +193,7 @@ test("the page and all specialist information remain available without JavaScrip
   expect(await image.evaluate(node=>(node as HTMLImageElement).naturalWidth)).toBe(1312);
   await expect(page.getByRole("heading",{name:"Fresh spaces. New possibilities."})).toBeVisible();
   await expect(page.locator("#development li")).toHaveCount(8);
-  await expect(page.locator("#seller-support article")).toHaveCount(4);
+  await expect(page.locator("#seller-support article")).toHaveCount(5);
   await expect(page.getByRole("heading",{name:"Divorce",exact:true})).toBeVisible();
   await expect(page.getByText("A balanced, professional approach to the property, with clear communication and respect for everyone involved.")).toBeVisible();
   await context.close();

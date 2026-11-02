@@ -1,9 +1,10 @@
+import { cache } from "react";
 import { database } from "./db";
 import type { Listing, ListingData } from "./validation";
 
 type Row = { id: string; data: ListingData; revision: number; created_at: Date; updated_at: Date };
 function listing(row: Row): Listing {
-  return { ...row.data, id: row.id, revision: row.revision, createdAt: row.created_at.toISOString(), updatedAt: row.updated_at.toISOString() };
+  return { ...row.data, lotSize: row.data.lotSize ?? null, pool: row.data.pool ?? null, spa: row.data.spa ?? null, title: row.data.address, id: row.id, revision: row.revision, createdAt: row.created_at.toISOString(), updatedAt: row.updated_at.toISOString() };
 }
 export async function getListings(publishedOnly = false, limit = 200) {
   const result = await database().query<Row>(`SELECT * FROM mellon_listings
@@ -11,11 +12,11 @@ export async function getListings(publishedOnly = false, limit = 200) {
     ORDER BY (data->>'featured')::boolean DESC, created_at DESC LIMIT $2`, [publishedOnly, limit]);
   return result.rows.map(listing);
 }
-export async function getListing(id: string, publishedOnly = false) {
+export const getListing = cache(async (id: string, publishedOnly = false) => {
   const result = await database().query<Row>(`SELECT * FROM mellon_listings WHERE id=$1
     AND ($2::boolean=false OR data->>'status'='published')`, [id, publishedOnly]);
   return result.rows[0] ? listing(result.rows[0]) : null;
-}
+});
 export async function saveListing(id: string | null, data: ListingData, revision: number, userId: string) {
   const client = await database().connect();
   try {

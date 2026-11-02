@@ -1,6 +1,6 @@
-# Mellon
+# Mellon Real Estate
 
-A pink real estate homepage built with Next.js App Router, TypeScript, vanilla CSS Modules, and a cursor-responsive mascot made from the original transparent logo artwork.
+Next.js App Router site for Ian Mellon, California Real Estate Broker, DRE #01921587. The public canonical domain is https://mellonhomes.com.
 
 ## Run locally
 
@@ -9,62 +9,85 @@ npm install
 npm run dev
 ```
 
-Open http://localhost:3000. Use `npm run dev -- --port 3010` if port 3000 is occupied. Requires Node.js 20.9 or newer.
+Use `npm run dev -- --port 3010` to match the example authentication origin. The homepage uses the supplied 2D mascot with pointer-responsive SVG eyes; it does not load a 3D model. The alternate homepages and their dedicated assets have been removed. `/home2` and `/home3` permanently redirect to `/`.
 
-## Mascot and cursor
+## Admin and persistence
 
-`src/components/MascotScene.tsx` displays the unchanged transparent `public/images/mellon-mascot.png` with two independently moving SVG iris layers. Each iris is a clipped copy of the same source PNG, with manually traced eye sockets and cream shaded SVG eye whites. There are no separate edited eye/body image assets. The original eyes remain visible at rest; the overlays cover them during tracking.
-
-The body stays stationary, sized to fit fully inside the hero and positioned to the right on desktop. Each eye follows the pointer horizontally and vertically from its own screen position, using frame-rate-independent easing. The eye masks cover the original lower iris edges, and shaded iris extensions fill the portions hidden by the cheeks in the source. The eyes return to neutral when the pointer leaves. Touch taps direct the gaze briefly, and “Meet Mellon” demonstrates the eye movement. Rendering stops after settling and pauses when hidden or offscreen. Reduced-motion visitors see the original static artwork, which also remains visible without JavaScript. All animation frames, timers, observers, and listeners are cleaned up on unmount.
-
-The cream cursor ring uses fixed viewport coordinates with no trailing interpolation. Its center replaces the native cursor on desktop, including over buttons. It is hidden on touchscreens, during keyboard navigation, and in reduced-motion mode.
-
-The homepage uses no video, Canvas, WebGL, model downloads, or runtime generation service. The earlier video controller and assets are retained for reference but are not imported or requested by the homepage.
-
-## Landing page
-
-Buy, Sell, About, and contact actions navigate to the corresponding page sections. The main Next.js page includes:
-
-- A property gallery using the identical-build photographs from the supplied flyer, with an illustrative-photo disclosure.
-- An open specialist-services grid for pre-foreclosure/delinquency, probate, divorce, and short sales, with one contact action. All descriptions are visible without interaction or JavaScript.
-- Keyboard-accessible tabs for the eight supplied development projects.
-- Ian's broker information, phone and email contact links.
-- External Realtor.com searches for Bakersfield and Shafter.
-
-Below-hero motion uses small, one-time entrance transitions and gallery transitions. There is no pinned property reveal. Content remains visible without JavaScript and with reduced motion. The landing page uses restrained Nunito Sans headings, generous cream space, and an inset blush specialist panel; Archivo Black remains in the hero. The larger mascot still fits fully within the hero.
-
-There is no connected listings API, lead submission, or contact backend. The area-search links open external listings; they are not an embedded feed. Ian has no MLS membership. A future RentCast integration would need an API key, server-side caching, and an application-enforced usage limit: its free tier includes 50 requests per month, with paid overages ([pricing](https://developers.rentcast.io/reference/billing-and-pricing)).
-
-## Assets and source
-
-- `public/images/mellon-mascot.png`: unchanged supplied transparent artwork.
-- `src/components/MascotScene.tsx`: original artwork, eye masks, pointer tracking, cursor positioning, and touch/demo behavior.
-- `src/components/hero.module.css`: layout, responsive sizing, and all hero styling.
-- `src/components/LandingSections.tsx`: page content from the supplied flyers.
-- `src/components/PropertyGallery.tsx`, `DevelopmentTabs.tsx`, and `Reveal.tsx`: small interactive components.
-- `src/components/landing.module.css`: below-hero layout and motion.
-- `public/images/properties/`: supplied identical-build photography.
-- `assets/previews/landing/`: current desktop, mobile, tablet, and eye-direction screenshots.
-- `reference/`: original reference images, preserved unchanged.
-
-Archivo Black and Nunito Sans are bundled locally through Fontsource.
-
-To regenerate the archived video experiment (not needed to run the website):
+Copy the server-only settings from `.env.example`, configure PostgreSQL and Better Auth, then run:
 
 ```sh
-python -m pip install imageio-ffmpeg
-python scripts/prepare-mascot-video.py
+npm run cms:migrate
+npm run cms:admin
 ```
 
-The earlier video experiment (`src/components/video-mascot.ts`, `public/videos/`, `scripts/prepare-mascot-video.py`), pose bank (`public/images/mellon-poses/`, `scripts/extract-mascot-poses.py`) and 3D experiment (`assets/blender/mellon.blend`, `public/models/mellon.glb`, `scripts/blender/`) are retained for reference and are not loaded by the homepage.
+For an already configured database, `npm run properties:migrate` adds development content, showing requests, specialty inquiries, and email confirmation status without changing existing listings.
 
-## Verify
+- `/admin/listings`: publish listings, upload up to 50 photos per listing (JPG, PNG, or WebP, 2 MB each), and edit property details. The street address is always the title. Lot size is square feet; Pool and Spa are Yes/No with an unspecified option for older listings.
+- `/admin/development`: add/remove projects, change their stage, and edit descriptions. The original eight projects are the initial content until the first save; saving an empty list clears the pipeline. Public project and city counts follow the saved content.
+- `/admin/showings`: preferred Pacific showing times and visitor details. Requests require Ian's confirmation; they are not calendar bookings.
+- `/admin/leads`: home-value requests and optional RentCast results.
+- `/admin/inquiries`: inquiries from the five specialty pages.
+
+Requests are saved before email is attempted. The private inboxes show separate broker and visitor confirmation statuses. `Accepted by email provider` records provider acceptance, not a guarantee of inbox delivery.
+
+## Email
+
+Email follows the SMTP.com API pattern used in `D:/Projects/trends-frontend`.
+
+- Required: `SMTP_API` and `SMTP_CHANNEL`.
+- Authenticated sender: `contactforms@citryn.com`, displayed as Mellon Real Estate.
+- Broker recipient: `ianmellon@yahoo.com`, with Reply-To set to the visitor.
+- Visitor recipient: the submitted email only, with Reply-To set to Ian's Yahoo address.
+- Both messages contain HTML and plain-text alternatives. The visitor email does not repeat freeform messages or financial/property details.
+- The visitor confirmation is attempted only after the broker message is accepted. Confirmation failure does not cause the inquiry to be resubmitted.
+- Old `SMTP_HOST`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM`, `CONTACT_FROM_EMAIL`, and `LEAD_EMAIL_TO` settings are not used by this API integration.
+
+Templates: `src/lib/mail/templates.ts`. Run `npm run test:mail` to verify the API contract without sending live mail and generate reviewable HTML examples in `artifacts/email/`.
+
+## Specialty pages and SEO
+
+All five pages share the homepage's type, logo, pink/forest/cream/gold palette, responsive navigation, and footer. Each has distinct content, an inquiry form, a generated hero image, FAQs, internal links, and an official consumer-information resource.
+
+| URL | Main topic |
+| --- | --- |
+| `/pre-foreclosure-real-estate-bakersfield` | Pre-foreclosure Bakersfield; selling a house before foreclosure |
+| `/probate-real-estate-bakersfield` | Probate and inherited property sales in Bakersfield |
+| `/short-sale-realtor-bakersfield` | Short sale real estate in Bakersfield and Kern County |
+| `/divorce-real-estate-bakersfield` | Selling a house during divorce; Bakersfield real estate services |
+| `/foreclosure-property-solutions` | Notice of default property sales; distressed property solutions |
+
+`src/lib/specialties.ts` owns the copy. Titles, descriptions, canonicals, Open Graph, and Twitter cards are server rendered. Listings have their own address-based metadata. Structured data describes the real estate business, service, breadcrumbs, and visible FAQs; it does not invent reviews, a business street address, or accreditation. Search phrases using Realtor are addressed in FAQs without asserting unverified association membership.
+
+`/robots.txt` advertises the sitemap and excludes admin/private API routes. `/sitemap.xml` includes the homepage, listing collection, all specialties, and published listings with their actual update dates. Drafts and retired homepage URLs are excluded. The sitemap is dynamic so publication changes are reflected immediately; a database outage returns a failure instead of silently publishing an incomplete listing sitemap. Admin routes require authentication and carry noindex metadata.
+
+Keywords appear naturally in page headings and useful copy; no meta-keyword tag is added because [Google does not use it](https://developers.google.com/search/docs/fundamentals/seo-starter-guide). Once the production deployment is live, verify the domain in Google Search Console and submit `https://mellonhomes.com/sitemap.xml`.
+
+Generated images are stored in `public/images/specialties/`. `design/specialty-images.json` records the exact prompts and built-in ChatGPT image-generation provenance. The images are illustrative, not claims about actual listings or clients.
+
+Copy resources: [California homeowner rights](https://oag.ca.gov/hbor), [California probate guide](https://selfhelp.courts.ca.gov/probate), [CFPB short sale explanation](https://www.consumerfinance.gov/ask-cfpb/what-is-a-short-sale-en-290/), [California property and debts in divorce](https://selfhelp.courts.ca.gov/divorce/property-debts), and [CFPB foreclosure resources](https://www.consumerfinance.gov/housing/housing-insecurity/help-for-homeowners/avoid-foreclosure/).
+
+## Production configuration
+
+Set `BETTER_AUTH_URL=https://mellonhomes.com` and `VALUATION_SITE_ORIGIN=https://mellonhomes.com` in the deployment. Keep local development origins in local `.env`. The latter origin setting applies to all three public forms. Only set `VALUATION_TRUSTED_IP_HEADER` to a header that the deployment proxy overwrites with the real client IP; otherwise a conservative shared request limit applies.
+
+RentCast is optional. Without its key, home-value requests still reach the private inbox for personal review. The configured monthly cap limits application lookups.
+
+## Verification
 
 ```sh
-npm run lint
 npm run typecheck
+npm run lint
 npm run build
-npm run test:e2e
+npm run test:mail
 ```
 
-The 7 browser tests use installed Google Chrome and a local server on port 3010. They verify eye tracking in both axes, complete stationary artwork, neutral reset, idle stopping, cursor alignment after resize/scroll, gallery image loading, keyboard navigation and project tabs, visible specialist information, 360–1440 px layouts, touch input, reduced motion, hidden-page pausing, no-JavaScript artwork, and operation without Canvas or WebGL.
+For database integration tests, first run `scripts/cms-test-setup.ps1`, which uses only the disposable local PostgreSQL cluster on port 55438. Then run:
+
+```sh
+npm run test:showings
+npm run test:valuation
+npx playwright test --config playwright.cms.config.ts
+npx playwright test
+```
+
+Browser tests use installed Chrome. Test configurations explicitly disable SMTP.com credentials and RentCast so they cannot send live emails or make paid valuation requests. The general suite uses an unconfigured database fallback; CMS tests use the isolated local database. Browser screenshots are in `.cms-test/` or existing preview directories.

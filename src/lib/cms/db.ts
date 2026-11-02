@@ -4,6 +4,7 @@ import { databaseConfigured } from "./config";
 const globalDb = globalThis as unknown as { cmsPool?: Pool };
 export function database() {
   if (!databaseConfigured()) throw new Error("CMS database is not configured.");
+  if (globalDb.cmsPool?.ended) globalDb.cmsPool = undefined;
   return globalDb.cmsPool ??= new Pool({
     connectionString: process.env.DATABASE_URL,
     max: 3,

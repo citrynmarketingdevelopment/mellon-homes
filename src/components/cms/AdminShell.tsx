@@ -15,6 +15,9 @@ const navigation = [
   { href: "/admin/listings", label: "Listings", Icon: BuildingsIcon },
   { href: "/admin/listings/new", label: "New listing", Icon: PlusIcon },
   { href: "/admin/leads", label: "Home value leads", Icon: EnvelopeSimpleIcon },
+  { href: "/admin/showings", label: "Showing requests", Icon: EnvelopeSimpleIcon },
+  { href: "/admin/inquiries", label: "Specialty inquiries", Icon: EnvelopeSimpleIcon },
+  { href: "/admin/development", label: "Development pipeline", Icon: BuildingsIcon },
   { href: "/admin/password", label: "Account", Icon: GearSixIcon },
 ];
 export default function AdminShell({ children, user }: { children: React.ReactNode; user: { name: string; email: string } | null }) {

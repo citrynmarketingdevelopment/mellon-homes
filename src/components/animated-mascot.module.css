@@ -1,0 +1,3 @@
+.animatedMascot { display:block; flex:0 0 112px; width:112px; height:112px; padding:0; border:0; background:transparent; cursor:pointer; border-radius:14px; }
+.animatedMascot img { width:100%; height:100%; object-fit:contain; }
+@media(max-width:767px) { .animatedMascot { width:96px; height:96px; flex-basis:96px; } }

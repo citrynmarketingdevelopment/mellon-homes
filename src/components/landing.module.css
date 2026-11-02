@@ -16,21 +16,6 @@
 .landing[data-home-variant="original"] .broker { background:#f7f3e8; }
 .landing[data-home-variant="original"] .footer p { color:#e8cf98; }
 @media(max-width:767px) { .collectionLabel { display:block; margin-top:26px; }.landing .collectionLabel h3 { font-size:25px; }.collectionLabel p { margin-top:8px; } }
-.landing[data-home-variant="home2"] { --cream:#faf8f1; --green:#173f35; --mint:#d5f3d4; --alternate-heading-size:clamp(32px,3.34vw,48px); }
-.landing[data-home-variant="home3"] { --cream:#fffcf5; --green:#073f35; --mint:#d5f3d4; --alternate-heading-size:clamp(30px,2.78vw,40px); }
-.landing[data-home-variant="home2"] h2 { font-family:"Archivo Black",Arial,sans-serif; font-weight:400; text-transform:uppercase; letter-spacing:-.035em; }
-.landing[data-home-variant="home2"] .properties,.landing[data-home-variant="home3"] .properties { background:var(--cream); }
-.landing .alternateListingHeading h2 { font-size:var(--alternate-heading-size)!important; }
-.alternateListingHeading a { padding:10px 24px; border:1px solid #073f3570; border-radius:30px; font-size:12px; }
-.landing[data-home-variant="home3"] .support { background:#d5f3d4; color:var(--green); }
-.landing[data-home-variant="home3"] .supportIntroduction .eyebrow,
-.landing[data-home-variant="home3"] .services a > svg { color:var(--green); }
-.landing[data-home-variant="home3"] .supportIntroduction .lead,
-.landing[data-home-variant="home3"] .services p { color:#375b4a; }
-.landing[data-home-variant="home3"] .services article { border-color:#073f3533; }
-.landing[data-home-variant="home3"] .services a:hover h3 { color:var(--green); text-decoration:underline; text-underline-offset:5px; }
-.landing[data-home-variant="home3"] .support a:focus-visible { outline-color:var(--green); }
-.landing[data-home-variant="home3"] .broker { background:var(--mellon-pink); }
 .wrap { width:min(1296px,calc(100% - 10%)); margin-inline:auto; }
 .section { padding-block:96px; scroll-margin-top:24px; }
 .landing h2 { font-family:var(--font-display); font-size:clamp(40px,4.3vw,64px); font-weight:800; letter-spacing:-.055em; line-height:1.04; text-wrap:balance; }
@@ -284,3 +269,6 @@
   .stage ul { grid-column:2; margin-top:18px; }
   .stageLink { grid-column:2; }
 }
+
+.projectDescription { width:100%; margin:8px 0 12px; white-space:pre-wrap; overflow-wrap:anywhere; }
+.pipelineEmpty { padding:0 24px 20px; font-size:14px; line-height:1.6; }

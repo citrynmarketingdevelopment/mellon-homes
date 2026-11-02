@@ -50,7 +50,7 @@ Local PostgreSQL tests cover login/logout, uploads, draft privacy, publishing, h
 
 ## Home valuation and lead capture
 
-Home version 1 is the selected homepage. The other design routes remain accessible for reference, but the production homepage no longer shows a version switcher. Construction imagery is illustrative, and the eight project addresses/stages follow the supplied development flyer.
+The main homepage is the only design route. `/home2` and `/home3` permanently redirect to `/`. Construction imagery is illustrative; development projects and their descriptions can be maintained in `/admin/development`.
 
 Run `npm run valuation:migrate` against the intended database to add the lead and usage-counter tables. The full `cms:migrate` also applies this additive migration. Homeowners must provide a name, full property address with ZIP code, email, phone, and contact consent. A total outstanding property-loan balance is optional. Blank means unknown; zero means paid off; negative equity is preserved.
 
@@ -64,7 +64,7 @@ Set these server-only environment variables, then restart/redeploy:
 - `VALUATION_MONTHLY_LIMIT`: defaults to 50. A shared, atomic PostgreSQL counter caps calls from this application per UTC calendar month, including unsuccessful attempts. Set 0 to disable automated lookups. Usage by other applications sharing the same provider account is outside this cap.
 - `VALUATION_SITE_ORIGIN`: the exact public HTTPS origin, without a trailing slash, especially behind a reverse proxy. Local development can use the incoming Host header.
 - `VALUATION_TRUSTED_IP_HEADER`: only a header overwritten by the trusted deployment proxy, for example `x-real-ip`. Requests are limited to 3 per email and 10 per IP per UTC hour. Without this setting the site uses a shared 10/hour limit. Idempotent retries do not consume another lookup.
-- `SMTP_HOST`, `SMTP_PORT` (587/STARTTLS or 465/TLS), `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM`, and `LEAD_EMAIL_TO`: authenticated SMTP routing. The notification includes the homeowner's contact details, property, balance, estimate when available, and consent. `Reply-To` is the homeowner's email; recipients are configured only on the server. SMTP failures are recorded in the private inbox for manual follow-up; there is no automatic mail retry worker.
+- `SMTP_API` and `SMTP_CHANNEL`: SMTP.com credentials, matching the trends-frontend integration. Notifications go to `ianmellon@yahoo.com` from the authenticated `contactforms@citryn.com` sender, with the homeowner as Reply-To. A separate HTML/plain-text thank-you goes to the homeowner after the broker notification is accepted. Both statuses are recorded in the private inbox; there is no automatic mail retry worker. See README.md for the shared email configuration and preview command.
 
 As checked October 26, 2026, [RentCast includes 50 free API calls/month, with paid overages](https://www.rentcast.io/api). Its [value estimate endpoint](https://developers.rentcast.io/reference/value-estimate) uses comparable sale listings. This integration does not claim verified closed-sale comps or three title sources. Equity is the automated value less homeowner-reported debt, before selling costs and unreported liens; it is not a lender payoff quote or appraisal. Live provider data and SMTP delivery still need validation using the configured accounts.
 

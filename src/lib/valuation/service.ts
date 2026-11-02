@@ -1,6 +1,6 @@
 import "server-only";
 import { createHash } from "node:crypto";
-import nodemailer from "nodemailer";
+import { sendNotification, normalizeDelivery, type NotificationResult } from "@/lib/mail/delivery";
 import { database } from "@/lib/cms/db";
 import { consentText, parseValuation, type ValuationLead, type ValuationResponse } from "./types";
 
@@ -37,32 +37,15 @@ async function getEstimate(lead: ValuationLead): Promise<ValuationResponse> {
   } catch { return { status: "requested" }; }
 }
 
-async function notifyBroker(lead: ValuationLead, result: ValuationResponse) {
-  const { SMTP_HOST, SMTP_USER, SMTP_PASS, SMTP_FROM, LEAD_EMAIL_TO } = process.env;
-  if (!SMTP_HOST || !SMTP_USER || !SMTP_PASS || !SMTP_FROM || !LEAD_EMAIL_TO) return "unconfigured";
-  const port = Number(process.env.SMTP_PORT || 587);
-  const transport = nodemailer.createTransport({
-    host: SMTP_HOST, port, secure: port === 465, requireTLS: port !== 465,
-    auth: { user: SMTP_USER, pass: SMTP_PASS },
-    connectionTimeout: 8_000, greetingTimeout: 8_000, socketTimeout: 12_000,
-    disableFileAccess: true, disableUrlAccess: true,
-  });
-  try {
-    const report = result.status === "estimate" ? result.report : undefined;
-    const message = await transport.sendMail({
-      from: SMTP_FROM, to: LEAD_EMAIL_TO, replyTo: lead.email,
-      subject: "Mellon: new home valuation request",
-      text: [
-        `Name: ${lead.name}`, `Property: ${lead.address}`, `Email: ${lead.email}`, `Phone: ${lead.phone}`,
-        `Homeowner-provided total loan balance: ${lead.loanBalance === undefined ? "Not provided" : `$${lead.loanBalance.toLocaleString("en-US")}`}`,
-        report ? `Estimated value: $${report.value.toLocaleString("en-US")} (RentCast AVM)` : "Personal review requested; automated estimate unavailable.",
-        report?.equity === undefined ? "Equity: not calculated" : `Estimated equity: $${report.equity.toLocaleString("en-US")}`,
-        `Contact consent: ${consentText}`, `Request reference: ${lead.requestId}`,
-      ].join("\n"),
-    });
-    return message.accepted.length > 0 && message.rejected.length === 0 ? "sent" : "failed";
-  } catch { return "failed"; }
-  finally { transport.close(); }
+async function notifyBroker(lead: ValuationLead, result: ValuationResponse): Promise<NotificationResult> {
+  const report = result.status === "estimate" ? result.report : undefined;
+  return sendNotification({ kind: "valuation", name: lead.name, email: lead.email, details: [
+    ["Name", lead.name], ["Property", lead.address], ["Email", lead.email], ["Phone", lead.phone],
+    ["Homeowner-provided total loan balance", lead.loanBalance === undefined ? "Not provided" : `$${lead.loanBalance.toLocaleString("en-US")}`],
+    ["Valuation", report ? `Estimated value: $${report.value.toLocaleString("en-US")} (RentCast AVM)` : "Personal review requested; automated estimate unavailable."],
+    ["Estimated equity", report?.equity === undefined ? "Not calculated" : `$${report.equity.toLocaleString("en-US")}`],
+    ["Contact consent", consentText], ["Reference", lead.requestId],
+  ] });
 }
 
 // Tests can supply local provider/mail doubles; production always uses the defaults.
@@ -98,9 +81,9 @@ export async function submitValuation(lead: ValuationLead, ip: string, dependenc
   let result: ValuationResponse = { status: "requested" };
   try { result = await dependencies.estimate(lead); } catch { /* Keep the saved lead for personal follow-up. */ }
   await database().query("UPDATE mellon_valuation_leads SET result = $2 WHERE id = $1", [lead.requestId, JSON.stringify(result)]);
-  let emailStatus = "failed";
-  try { emailStatus = await dependencies.notify(lead, result); } catch { /* The private inbox retains this request. */ }
-  await database().query("UPDATE mellon_valuation_leads SET email_status = $2 WHERE id = $1", [lead.requestId, emailStatus]);
+  let delivery = normalizeDelivery("failed");
+  try { delivery = normalizeDelivery(await dependencies.notify(lead, result)); } catch { /* The private inbox retains this request. */ }
+  await database().query("UPDATE mellon_valuation_leads SET email_status = $2, confirmation_status = $3 WHERE id = $1", [lead.requestId, delivery.broker, delivery.customer]);
   await database().query("DELETE FROM mellon_valuation_usage WHERE expires_at < now()");
   return result;
 }

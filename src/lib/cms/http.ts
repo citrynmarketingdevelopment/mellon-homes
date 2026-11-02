@@ -27,8 +27,8 @@ export async function limitedBody(request: Request, max: number) {
   } finally { reader.releaseLock(); }
   return Buffer.concat(chunks);
 }
-export async function readJson(request: Request) {
-  try { return JSON.parse((await limitedBody(request, 32_000)).toString()); }
+export async function readJson(request: Request, max = 32_000) {
+  try { return JSON.parse((await limitedBody(request, max)).toString()); }
   catch (error) { if (error instanceof HttpError) throw error; throw new HttpError(400, "Invalid request."); }
 }
 export function failure(error: unknown) {

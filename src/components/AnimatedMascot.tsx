@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
-import styles from "./alternate-home.module.css";
+import styles from "./animated-mascot.module.css";
 
 /** Animated WebP keeps the original video alpha transparent across browsers. */
 export default function AnimatedMascot() {

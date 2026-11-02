@@ -2,7 +2,7 @@ import { defineConfig } from '@playwright/test';
 
 export default defineConfig({
   testDir: './tests',
-  testIgnore: ['cms.spec.ts', 'valuation-cms.spec.ts'],
+  testIgnore: ['cms.spec.ts', 'valuation-cms.spec.ts', 'property-updates.spec.ts', 'contact-cms.spec.ts'],
   fullyParallel: false,
   workers: 1,
   timeout: 60_000,
@@ -20,7 +20,7 @@ export default defineConfig({
     reuseExistingServer: false,
     // Hero/gallery regression checks intentionally use the unconfigured fallback.
     // CMS tests run against their own isolated database and port instead.
-    env: { DATABASE_URL: '', ADMIN_EMAILS: '', BETTER_AUTH_SECRET: '', RENTCAST_API_KEY: '', SMTP_HOST: '', VALUATION_SITE_ORIGIN: '' },
+    env: { DATABASE_URL: '', ADMIN_EMAILS: '', BETTER_AUTH_SECRET: '', RENTCAST_API_KEY: '', SMTP_API: "", SMTP_CHANNEL: "", SMTP_HOST: '', VALUATION_SITE_ORIGIN: '' },
     timeout: 120_000,
   },
 });
