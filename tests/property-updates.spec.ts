@@ -1,9 +1,10 @@
 import { test, expect, type Page } from "@playwright/test";
-import { randomUUID } from "node:crypto";
+import { randomBytes, randomUUID } from "node:crypto";
 import { database } from "../src/lib/cms/db";
 import { defaultProjects } from "../src/lib/cms/development-data";
 import { listingSchema } from "../src/lib/cms/validation";
 import sharp from "sharp";
+import { MAX_SOURCE_PHOTO_BYTES, MAX_UPLOAD_PHOTO_BYTES, MAX_PHOTO_EDGE } from "../src/lib/cms/limits";
 
 const origin = "http://127.0.0.1:3012";
 const headers = { Origin: origin };
@@ -78,6 +79,69 @@ test("a listing accepts 50 uploaded photos and rejects a 51st", async ({ page, r
     expect((await request.get(`/api/photos/${ids[49]}`)).status()).toBe(200);
   } finally {
     if (createdId) await database().query("DELETE FROM mellon_listings WHERE id=$1", [createdId]);
+    await database().query("DELETE FROM mellon_photos WHERE id=ANY($1::uuid[])", [ids]);
+  }
+});
+
+test("20 MB originals are compressed before upload and only optimized, correctly oriented photos are stored", async ({ page }) => {
+  await login(page);
+  await page.goto("/admin/listings/new");
+  const encoded = await sharp(randomBytes(3000 * 2000 * 3), { raw: { width: 3000, height: 2000, channels: 3 } }).png().toBuffer();
+  expect(encoded.length).toBeGreaterThan(4.5 * 1024 * 1024);
+  expect(encoded.length).toBeLessThan(MAX_SOURCE_PHOTO_BYTES);
+  // PNG decoders allow trailing bytes; pad a valid, detailed photo to the exact limit.
+  const original = Buffer.concat([encoded, Buffer.alloc(MAX_SOURCE_PHOTO_BYTES - encoded.length)]);
+  const uploads: { size: number; type: string; width: number; height: number }[] = [];
+  const ids: string[] = [];
+  await page.route("**/api/admin/photos", async route => {
+    const req = route.request();
+    const body = req.postDataBuffer()!;
+    expect(body.length).toBeLessThan(3 * 1024 * 1024);
+    const form = await new Response(new Uint8Array(body), { headers: { "Content-Type": req.headers()['content-type'] } }).formData();
+    const photo = form.get("photo") as File;
+    const meta = await sharp(Buffer.from(await photo.arrayBuffer())).metadata();
+    uploads.push({ size: photo.size, type: photo.type, width: meta.width!, height: meta.height! });
+    await route.continue();
+  });
+  page.on("response", async response => {
+    if (response.url().endsWith("/api/admin/photos") && response.status() === 201) ids.push((await response.json()).id);
+  });
+  try {
+    await page.getByLabel("Add photos").setInputFiles({ name: "oversize.png", mimeType: "image/png", buffer: Buffer.concat([original, Buffer.from([0])]) });
+    await expect(page.getByRole("alert").filter({ hasText: "choose a photo up to 20 MB" })).toBeVisible();
+    expect(uploads).toHaveLength(0);
+    await page.getByLabel("Add photos").setInputFiles({ name: "broken.jpg", mimeType: "image/jpeg", buffer: Buffer.from("not a photo") });
+    await expect(page.getByRole("alert").filter({ hasText: "could not be read" })).toBeVisible();
+    expect(uploads).toHaveLength(0);
+    await page.getByLabel("Add photos").setInputFiles({ name: "large-property.png", mimeType: "image/png", buffer: original });
+    await expect(page.getByRole("status")).toHaveText("1/50 photos", { timeout: 45000 });
+    const portrait = await sharp({ create: { width: 120, height: 80, channels: 3, background: "#f6b8cc" } }).jpeg().withMetadata({ orientation: 6 }).toBuffer();
+    await page.getByLabel("Add photos").setInputFiles({ name: "portrait.jpg", mimeType: "image/jpeg", buffer: portrait });
+    await expect(page.getByRole("status")).toHaveText("2/50 photos");
+    expect(uploads).toHaveLength(2);
+    expect(uploads[0].size).toBeLessThanOrEqual(MAX_UPLOAD_PHOTO_BYTES);
+    expect(uploads[0].type).toBe("image/webp");
+    expect(Math.max(uploads[0].width, uploads[0].height)).toBe(MAX_PHOTO_EDGE);
+    expect(uploads[1]).toMatchObject({ width: 80, height: 120 });
+    expect(ids).toHaveLength(2);
+    for (const [index, id] of ids.entries()) {
+      const row = (await database().query("SELECT bytes FROM mellon_photos WHERE id=$1", [id])).rows[0];
+      expect(row.bytes.length).toBeLessThanOrEqual(MAX_UPLOAD_PHOTO_BYTES);
+      const stored = await sharp(row.bytes).metadata();
+      expect(stored.format).toBe("webp");
+      expect(stored.exif).toBeUndefined();
+      expect(stored.orientation).toBeUndefined();
+      expect(Math.max(stored.width!, stored.height!)).toBeLessThanOrEqual(MAX_PHOTO_EDGE);
+      if (index === 1) expect(stored).toMatchObject({ width: 80, height: 120 });
+    }
+    // The API independently rejects large bodies and spoofed files without storing them.
+    const before = (await database().query("SELECT count(*)::int AS count FROM mellon_photos")).rows[0].count;
+    const largeResponse = await page.request.post("/api/admin/photos", { headers, multipart: { photo: { name: "raw.png", mimeType: "image/png", buffer: original } } });
+    expect(largeResponse.status()).toBe(413);
+    const spoofedResponse = await page.request.post("/api/admin/photos", { headers, multipart: { photo: { name: "fake.jpg", mimeType: "image/jpeg", buffer: Buffer.from("not a photo") } } });
+    expect(spoofedResponse.status()).toBe(400);
+    expect((await database().query("SELECT count(*)::int AS count FROM mellon_photos")).rows[0].count).toBe(before);
+  } finally {
     await database().query("DELETE FROM mellon_photos WHERE id=ANY($1::uuid[])", [ids]);
   }
 });

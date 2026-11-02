@@ -5,6 +5,7 @@ import { useEffect, useRef, useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import type { Listing, ListingData } from "@/lib/cms/validation";
 import { MAX_LISTING_PHOTOS } from "@/lib/cms/limits";
+import { compressPhoto, validateSourcePhoto } from "@/lib/cms/compress-photo";
 import styles from "@/app/admin/admin.module.css";
 import ConfirmDelete from "./ConfirmDelete";
 
@@ -14,6 +15,7 @@ export default function ListingEditor({ initial }: { initial?: Listing }) {
   const [photos, setPhotos] = useState(initial?.photos ?? []);
   const [busy, setBusy] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [uploadStep, setUploadStep] = useState("");
   const [error, setError] = useState("");
   const [message, setMessage] = useState("");
   const [dirty, setDirty] = useState(false);
@@ -35,15 +37,19 @@ export default function ListingEditor({ initial }: { initial?: Listing }) {
     if (photos.length + files.length > MAX_LISTING_PHOTOS) { setError(`Use up to ${MAX_LISTING_PHOTOS} photos per listing.`); return; }
     setUploading(true);
     try {
+      // Validate the whole selection before uploading any of it.
+      Array.from(files).forEach(validateSourcePhoto);
       for (const file of Array.from(files)) {
-        if (file.size > 2 * 1024 * 1024) throw new Error(`${file.name}: choose a photo under 2 MB.`);
-        const form = new FormData(); form.set("photo", file);
+        setUploadStep("Compressing photo…");
+        const optimized = await compressPhoto(file);
+        setUploadStep("Uploading optimized photo…");
+        const form = new FormData(); form.set("photo", optimized);
         const response = await fetch("/api/admin/photos", { method: "POST", body: form });
         const result = await response.json(); if (!response.ok) throw new Error(result.error ?? "Upload failed.");
         setPhotos(previous => [...previous, result.id]); setDirty(true);
       }
     } catch (reason) { setError(reason instanceof Error ? reason.message : "Upload failed. Try again."); }
-    finally { setUploading(false); }
+    finally { setUploading(false); setUploadStep(""); }
   }
   async function save(event: FormEvent<HTMLFormElement>) {
     event.preventDefault(); setBusy(true); setError(""); setMessage("");
@@ -88,8 +94,8 @@ export default function ListingEditor({ initial }: { initial?: Listing }) {
         <div className={styles.grid}>{field("lotSize", "Lot size (sq ft)", "number", { required: false, min: 0.01, max: 1000000000, step: "any" })}{(["pool", "spa"] as const).map(name => <label key={name}>{name === "pool" ? "Pool" : "Spa"}<select name={name} aria-label={name === "pool" ? "Pool" : "Spa"} defaultValue={initial?.[name] == null ? "" : initial[name] ? "yes" : "no"}><option value="">Not specified</option><option value="yes">Yes</option><option value="no">No</option></select></label>)}</div>
         <label>Description<textarea name="description" required minLength={10} maxLength={8000} rows={7} defaultValue={initial?.description} /></label>
       </fieldset>
-      <section className={styles.panel} aria-labelledby="photos-heading"><h2 id="photos-heading">Property photos</h2><p>Up to {MAX_LISTING_PHOTOS} JPG, PNG, or WebP photos, 2 MB each. The first photo is the cover.</p><label className={styles.upload}>Add photos<input type="file" accept="image/jpeg,image/png,image/webp" multiple disabled={busy || uploading || photos.length >= MAX_LISTING_PHOTOS} onChange={event => { void upload(event.target.files); event.target.value = ""; }} /></label>
-        <div className={styles.photos}>{photos.map((id, index) => <div key={id}><Image unoptimized src={`/api/photos/${id}`} alt={`Listing photo ${index + 1}`} width={240} height={170} /><div><button type="button" disabled={busy || uploading || index === 0} onClick={() => { setPhotos([id, ...photos.filter(photo => photo !== id)]); setDirty(true); }}>{index === 0 ? "Cover photo" : "Make cover"}</button><button type="button" disabled={busy || uploading} aria-label={`Remove photo ${index + 1}`} onClick={() => { setPhotos(photos.filter(photo => photo !== id)); setDirty(true); }}>Remove</button></div></div>)}</div><p role="status">{uploading ? `Uploading and optimizing photos… ${photos.length}/${MAX_LISTING_PHOTOS}` : `${photos.length}/${MAX_LISTING_PHOTOS} photos`}</p>
+      <section className={styles.panel} aria-labelledby="photos-heading"><h2 id="photos-heading">Property photos</h2><p>Up to {MAX_LISTING_PHOTOS} JPG, PNG, or WebP photos, up to 20 MB each. Photos are automatically compressed; only optimized images are stored. The first photo is the cover.</p><label className={styles.upload}>Add photos<input type="file" accept="image/jpeg,image/png,image/webp" multiple disabled={busy || uploading || photos.length >= MAX_LISTING_PHOTOS} onChange={event => { void upload(event.target.files); event.target.value = ""; }} /></label>
+        <div className={styles.photos}>{photos.map((id, index) => <div key={id}><Image unoptimized src={`/api/photos/${id}`} alt={`Listing photo ${index + 1}`} width={240} height={170} /><div><button type="button" disabled={busy || uploading || index === 0} onClick={() => { setPhotos([id, ...photos.filter(photo => photo !== id)]); setDirty(true); }}>{index === 0 ? "Cover photo" : "Make cover"}</button><button type="button" disabled={busy || uploading} aria-label={`Remove photo ${index + 1}`} onClick={() => { setPhotos(photos.filter(photo => photo !== id)); setDirty(true); }}>Remove</button></div></div>)}</div><p role="status">{uploading ? `${uploadStep} ${photos.length}/${MAX_LISTING_PHOTOS}` : `${photos.length}/${MAX_LISTING_PHOTOS} photos`}</p>
       </section>
       </div><aside className={styles.editorAside}>
       <fieldset className={styles.publish} disabled={busy || uploading}><legend>Visibility</legend><label>Publication status<select name="status" defaultValue={initial?.status ?? "draft"}><option value="draft">Draft — private</option><option value="published">Published — visible on website</option></select></label><label className={styles.check}><input type="checkbox" name="featured" defaultChecked={initial?.featured} />Feature this listing first</label><p className={styles.hint}>Switch a published listing to Draft to remove it from the public website.</p></fieldset>

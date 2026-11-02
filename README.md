@@ -22,7 +22,7 @@ npm run cms:admin
 
 For an already configured database, `npm run properties:migrate` adds development content, showing requests, specialty inquiries, and email confirmation status without changing existing listings.
 
-- `/admin/listings`: publish listings, upload up to 50 photos per listing (JPG, PNG, or WebP, 2 MB each), and edit property details. The street address is always the title. Lot size is square feet; Pool and Spa are Yes/No with an unspecified option for older listings.
+- `/admin/listings`: publish listings, upload up to 50 photos per listing (JPG, PNG, or WebP, up to 20 MB each), and edit property details. The browser compresses each photo to at most 2 MB and 2400px on its longest edge before upload. The server validates and re-encodes it as WebP, strips metadata, and stores only the optimized bytes in PostgreSQL (at most 2 MB). Originals are never uploaded or persisted. Images are processed sequentially to limit memory use. The street address is always the title. Lot size is square feet; Pool and Spa are Yes/No with an unspecified option for older listings.
 - `/admin/development`: add/remove projects, change their stage, and edit descriptions. The original eight projects are the initial content until the first save; saving an empty list clears the pipeline. Public project and city counts follow the saved content.
 - `/admin/showings`: preferred Pacific showing times and visitor details. Requests require Ian's confirmation; they are not calendar bookings.
 - `/admin/leads`: home-value requests and optional RentCast results.
