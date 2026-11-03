@@ -7,7 +7,7 @@ import BrandLogo from "./BrandLogo";
 import { specialties } from "@/lib/specialties";
 import styles from "./site-header.module.css";
 
-export default function SiteHeader({ home = false }: { home?: boolean }) {
+export default function SiteHeader({ home = false, contactHref, activePage }: { home?: boolean; contactHref?: string; activePage?: "ian" }) {
   const [open, setOpen] = useState(false);
   const header = useRef<HTMLElement>(null);
   const dropdown = useRef<HTMLDetailsElement>(null);
@@ -39,9 +39,9 @@ export default function SiteHeader({ home = false }: { home?: boolean }) {
       <details ref={dropdown} className={styles.specialties}><summary>Specialties<CaretDownIcon aria-hidden="true" /></summary>
         <div className={styles.dropdown}><p>SUPPORT FOR YOUR NEXT CHAPTER</p>{specialties.map(item => <Link key={item.slug} href={`/${item.slug}`}>{item.label}<ArrowUpRightIcon aria-hidden="true" /></Link>)}</div>
       </details>
-      <a href={href("development")}>Development</a><a href={href("ian")}>Meet Ian</a><a href={href("home-value")}>Home value</a>
+      <a href={href("development")}>Development</a><Link href="/about-ian" aria-current={activePage === "ian" ? "page" : undefined}>Meet Ian</Link><a href={href("home-value")}>Home value</a>
     </nav>
-    <a href={home ? "#contact" : "#specialty-contact"} className={styles.contact}>Let’s talk<ArrowUpRightIcon aria-hidden="true" /></a>
+    <a href={contactHref ?? (home ? "#contact" : "#specialty-contact")} className={styles.contact}>Let’s talk<ArrowUpRightIcon aria-hidden="true" /></a>
     <button ref={toggle} type="button" className={styles.toggle} aria-label={open ? "Close navigation" : "Open navigation"} aria-expanded={open} aria-controls="main-navigation" onClick={() => setOpen(!open)}><span /><span /></button>
   </header>;
 }

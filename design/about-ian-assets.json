@@ -1,0 +1,25 @@
+{
+  "portrait": {
+    "file": "public/images/ian/ian-mellon.webp",
+    "sourcePage": "https://www.zillow.com/profile/Ian%20Mellon",
+    "sourceImage": "https://photos.zillowstatic.com/fp/3ec7f9e4d446b516f66443dd3d107dc4-p_f.jpg",
+    "processing": "Original 768px profile portrait, encoded as WebP. No AI alteration."
+  },
+  "planning": {
+    "file": "public/images/ian/property-planning.webp",
+    "generator": "Built-in ChatGPT image_gen tool",
+    "prompt": "Create a realistic editorial photograph for the About page of a personable Bakersfield, California real estate broker whose work includes property investment, renovations, small multifamily homes and development. Landscape 3:2 composition. A close, natural still life of a small unpainted architectural scale model of a modest white stucco fourplex with dark roof trim, resting on softly folded architectural floor plans on a tidy light neutral worktable; a simple mechanical pencil and two warm gray material samples nearby. Soft daylight from left, authentic paper texture, restrained forest green foliage out of focus at the far background, clean ivory and pale muted pink surrounding tones to fit the existing Mellon real estate brand. Grounded and approachable, not an extravagant luxury mansion, not an advertisement. Thoughtful architectural magazine photography, shallow depth of field with the scale model in focus, no people, no faces, no readable words, no logos, no captions, no watermarks, no icons, no data graphics. This is illustrative supporting photography about evaluating property potential, not an actual listing or Ian's project.",
+    "note": "Illustrative architectural scale model, not an actual listing or an assertion about Ian's own projects."
+  },
+  "copy": {
+    "source": "Biography provided by the user in this chat",
+    "notes": "No invented hobbies, personal history, testimonials, transaction counts, or performance figures."
+  },
+  "design": {
+    "mode": "Preserve existing brand",
+    "DESIGN_VARIANCE": 6,
+    "MOTION_INTENSITY": 3,
+    "VISUAL_DENSITY": 3,
+    "theme": "Existing light brand theme retained, including for system dark preference."
+  }
+}

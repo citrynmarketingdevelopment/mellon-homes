@@ -36,7 +36,7 @@ Email follows the SMTP.com API pattern used in `D:/Projects/trends-frontend`.
 
 - Required: `SMTP_API` and `SMTP_CHANNEL`.
 - Authenticated sender: `contactforms@citryn.com`, displayed as Mellon Real Estate.
-- Broker recipient: `ianmellon@yahoo.com`, with Reply-To set to the visitor.
+- Notification recipients: `ianmellon@yahoo.com` and `citryn.contactforms@gmail.com`, with Reply-To set to the visitor. Both receive specialty inquiries, showing requests, and home-value requests.
 - Visitor recipient: the submitted email only, with Reply-To set to Ian's Yahoo address.
 - Both messages contain HTML and plain-text alternatives. The visitor email does not repeat freeform messages or financial/property details.
 - The visitor confirmation is attempted only after the broker message is accepted. Confirmation failure does not cause the inquiry to be resubmitted.
@@ -45,6 +45,8 @@ Email follows the SMTP.com API pattern used in `D:/Projects/trends-frontend`.
 Templates: `src/lib/mail/templates.ts`. Run `npm run test:mail` to verify the API contract without sending live mail and generate reviewable HTML examples in `artifacts/email/`.
 
 ## Specialty pages and SEO
+
+`/about-ian` introduces Ian Mellon with his original public-profile portrait, a biography based on the supplied founder bio, investment and development experience, working philosophy, and an accessible question-and-answer section. The shared Meet Ian navigation, homepage introduction, and footer link to the page. Profile copy lives in `src/lib/ian.ts` and informs the homepage introduction and development messaging. The page includes canonical/social metadata, a Person/ProfilePage schema, and a sitemap entry. Image sources and the exact prompt for the illustrative planning image are recorded in `design/about-ian-assets.json`.
 
 All five pages share the homepage's type, logo, pink/forest/cream/gold palette, responsive navigation, and footer. Each has distinct content, an inquiry form, a generated hero image, FAQs, internal links, and an official consumer-information resource.
 

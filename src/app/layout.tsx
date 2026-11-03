@@ -8,7 +8,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   metadataBase: new URL(site.url),
-  ...pageMetadata("Bakersfield Real Estate & Seller Support | Mellon", "Buy, sell, and explore new construction in Bakersfield and Kern County with broker Ian Mellon. Personal guidance for probate, pre-foreclosure, and complex sales.", "/"),
+  ...pageMetadata("Bakersfield Real Estate & Seller Support | Mellon", "Explore homes, investment property, and new construction in Bakersfield and Kern County with Ian Mellon. Personal guidance for residential and complex sales.", "/"),
   robots: { index: true, follow: true, googleBot: { index: true, follow: true, "max-image-preview": "large" } },
 };
 

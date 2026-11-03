@@ -12,6 +12,7 @@ import PublishedListings from "./PublishedListings";
 import listingStyles from "./listings.module.css";
 import HomeValuation from "./HomeValuation";
 import DevelopmentShowcase from "./DevelopmentShowcase";
+import { ian } from "@/lib/ian";
 
 const specialties = [
   { href: "/pre-foreclosure-real-estate-bakersfield", title: "Pre-foreclosure & delinquency", description: "Behind on payments? Talk through your property, your timeline, and the questions to raise with your lender.", Icon: HouseLineIcon },
@@ -21,9 +22,9 @@ const specialties = [
   { href: "/short-sale-realtor-bakersfield", title: "Short sales", description: "Explore a possible sale and understand the next steps to discuss with your lender.", Icon: HandshakeIcon },
 ];
 const steps = [
-  ["Start with your story.", "Your property, your timing, your priorities."],
-  ["See the possibilities.", "Clear information to help you make an informed move."],
-  ["Take the next step.", "A practical direction, with personal support."],
+  ["Start with your story.", "Your property, your timing, and the circumstances behind your decision."],
+  ["See the possibilities.", "A perspective shaped by residential sales, investment, and development."],
+  ["Take the next step.", "Clear communication and personal attention throughout the transaction."],
 ];
 
 export default function LandingSections() {
@@ -68,9 +69,9 @@ export default function LandingSections() {
         <div className={styles.brokerIntroduction}>
           <p className={styles.eyebrow}>MEET YOUR BROKER</p>
           <h2 id="ian-title">Real estate.<br />With a real person.</h2>
-          <p className={styles.lead}>I’m Ian Mellon. Whether you’re finding a home or navigating a complicated sale, let’s talk through your options together.</p>
+          <p className={styles.lead}>{ian.homeIntroduction}</p>
           <p className={styles.credentials}><strong>Ian Mellon</strong><br />California Real Estate Broker · DRE #01921587</p>
-          <a href="#contact" className={styles.button}>Get to know Ian <ArrowUpRightIcon aria-hidden="true" /></a>
+          <Link href={ian.path} className={styles.button}>Get to know Ian <ArrowUpRightIcon aria-hidden="true" /></Link>
         </div>
         <ol className={styles.process}>
           {steps.map(([title, description], index) => <li key={title}><span aria-hidden="true">0{index + 1}</span><div><h3>{title}</h3><p>{description}</p></div></li>)}

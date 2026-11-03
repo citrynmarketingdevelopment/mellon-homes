@@ -20,7 +20,7 @@ async function main() {
       };
       assert.deepEqual(await sendNotification({ ...input, kind }), { broker: "sent", customer: "sent" });
       assert.equal(calls.length, 2);
-      assert.deepEqual(calls[0].recipients, { to: [{ address: "ianmellon@yahoo.com" }] });
+      assert.deepEqual(calls[0].recipients, { to: [{ address: "ianmellon@yahoo.com" }, { address: "citryn.contactforms@gmail.com" }] });
       assert.deepEqual(calls[1].recipients, { to: [{ address: input.email }] });
       assert.deepEqual(calls[0].originator, { from: { name: "Mellon Real Estate", address: "contactforms@citryn.com" }, reply_to: { address: input.email } });
       assert.deepEqual(calls[1].originator, { from: { name: "Mellon Real Estate", address: "contactforms@citryn.com" }, reply_to: { address: "ianmellon@yahoo.com" } });

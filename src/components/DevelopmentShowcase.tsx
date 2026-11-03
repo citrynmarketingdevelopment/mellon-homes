@@ -17,7 +17,7 @@ export default async function DevelopmentShowcase() {
       <Reveal className={styles.intro}>
         <p className={styles.eyebrow}>NEW CONSTRUCTION · KERN COUNTY</p>
         <h2 id="development-title">Good things<br />are <em>growing.</em></h2>
-        <p className={styles.lead}>Explore our growing portfolio of newly built multifamily properties available for sale, with opportunities for investors and owner-occupants alike.</p>
+        <p className={styles.lead}>Explore multifamily and new construction opportunities in Bakersfield and Shafter, with Ian’s perspective on acquisition, property potential, and resale positioning.</p>
       </Reveal>
       <Reveal className={styles.showcase}>
         <figure className={styles.exterior}>
